@@ -1,0 +1,203 @@
+/*
+    Copyright 2018 Flight Lab authors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+// System configuration protobuf and server-client communication interface.
+
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package flightlab;
+
+// User identification.
+message User {
+  string id = 1;
+}
+
+// Configuration for projector.
+message Projector {
+  enum Status {
+    UNKNOWN = 0;
+    OFF = 1;
+    WARM_UP = 2;
+    ON = 3;
+    COOL_DOWN = 4;
+  }
+
+  string ip = 3;
+  Status status = 4;
+}
+
+// Configuration for DMX lighting.
+message DMXLight {
+  enum Status {
+    UNKNOWN = 0;
+    OFF = 1;
+    ON = 2;
+  }
+
+  string com = 1;
+  Status status = 2;
+}
+
+// Configuration for GUI app.
+message App {
+  enum Status {
+    UNKNOWN = 0;
+    NOT_RUNNING = 1;
+    RUNNING = 2;
+  }
+  enum RunOption {
+    NORMAL = 0;        // Starts when system is on and stops when system is off.
+    RUN_WHEN_OFF = 1;  // Starts when system is off and stops when system is on.
+    RUN_ALWAYS = 2;    // Runs all the time.
+    STOP_ONLY = 3;     // Only stops when system is off.
+  }
+
+  string executable_path = 3;
+  repeated string arguments = 4;
+  bool restart_on_crash = 5;
+  bool start_minimized = 6;
+  repeated Window windows = 7;
+  Status status = 8;
+  RunOption run_option = 9;
+}
+
+// Configuration for GUI window alteration.
+message Window {
+  string name = 1;
+  string class_name = 2;
+  string window_name = 3;
+  int32 left = 4;
+  int32 top = 5;
+  int32 width = 6;
+  int32 height = 7;
+  bool borderless = 8;
+}
+
+// Configuration for command line app.
+message CommandLine {
+  repeated string when_on = 1;   // command to run when system is on.
+  repeated string when_off = 2;  // command to run when system is off.
+}
+
+// Configuration for sound playing.
+message Sound {
+  string media_path = 1;
+}
+
+// Configuration for component.
+message Component {
+  // Generic status for a component. This is for frontend to use without
+  // knowledge of specific component details.
+  // The status field in component-specific configuration protobuf contains more
+  // details for debugging purpose.
+  enum Status {
+    NOT_APPLICABLE = 0;
+    UNKNOWN = 1;
+    OFF = 2;
+    TRANSIENT = 3;
+    ON = 4;
+  }
+
+  string name = 1;          // a unique name across all components on a machine.
+  string display_name = 2;  // name to display to user.
+  string description = 3;   // description of the component.
+  Status status = 4;        // status of the component.
+
+  // Configuration for specific component type.
+  oneof kind {
+    Projector projector = 5;
+    DMXLight light = 6;
+    App app = 7;
+    Sound sound = 8;
+    CommandLine commandline = 9;
+  }
+}
+
+// Configuration for a client machine.
+message Machine {
+  string name = 1;  // a unique name across the entire system.
+  string description = 2;
+  string ip = 3;
+  repeated Component components = 4;
+  string chrome_executable_path = 5;
+  float last_heartbeat_timstamp = 6;
+}
+
+// Configuration for the entire system.
+message System {
+  enum State {
+    UNKNOWN = 0;
+    OFF = 1;
+    TRANSIENT = 2;
+    ON = 3;
+  }
+
+  State state = 1;
+  User user = 2;
+  repeated Machine machines = 6;
+  string master_machine_name = 7;
+}
+
+service ControlService {
+  // Updates status of components from client to server.
+  rpc UpdateStatus(MachineStatus) returns (google.protobuf.Empty) {
+  }
+  // Listens to command from server.
+  rpc Watch(MachineId) returns (stream SystemCommand) {
+  }
+}
+
+// Client identification.
+message MachineId {
+  // Name of the machine. It should be the same as defined in Machine protobuf.
+  string name = 1;
+}
+
+// Status of a component.
+message ComponentStatus {
+  string name = 1;
+  Component.Status status = 2;
+  oneof kind {
+    Projector.Status projector_status = 3;
+    App.Status app_status = 4;
+  }
+}
+
+// Status of multiple components of a client machine.
+message MachineStatus {
+  string name = 1;
+  repeated ComponentStatus component_status = 2;
+}
+
+// System state.
+message SystemState {
+  System.State state = 1;
+}
+
+// System command.
+message SystemCommand {
+  enum Command {
+    UNKNOWN = 0;
+    START = 1;
+    STOP = 2;
+    RESTART = 3;
+    EXIT = 4;
+    DEBUG = 100;
+  }
+  Command command = 1;
+}

@@ -1,0 +1,9 @@
+cherrypy
+enum
+flask
+flask-cors
+grpcio-tools
+netifaces
+psutil
+pypiwin32
+pyserial
