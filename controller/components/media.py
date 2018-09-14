@@ -13,7 +13,7 @@
 # limitations under the License.
 """Library for components related to media control."""
 
-import winsound
+import playsound
 
 from components import base
 
@@ -23,5 +23,4 @@ class SoundComponent(base.Component):
 
   def _start(self):
     self.logger.info('[Sound] Playing startup sound...')
-    winsound.PlaySound(self.settings.media_path,
-                       winsound.SND_FILENAME | winsound.SND_ASYNC)
+    playsound.playsound(self.settings.media_path, block=False)

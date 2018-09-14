@@ -1,9 +1,9 @@
-cherrypy
+cherrypy==10.2.1
 enum
 flask
 flask-cors
 grpcio-tools
 netifaces
+playsound
 psutil
-pypiwin32
 pyserial

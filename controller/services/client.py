@@ -30,14 +30,13 @@ class ClientService(client_pb2_grpc.ClientServiceServicer, pattern.Closable):
       machine_config: Configuration protobuf of current machine.
     """
     super(ClientService, self).__init__(*args, **kwargs)
-    client_pb2_grpc.add_RemoteServiceServicer_to_server(self, server)
+    client_pb2_grpc.add_ClientServiceServicer_to_server(self, server)
     self._display = display.Display(
         chrome_path=machine_config.chrome_executable_path)
 
   def close(self):
     """Stops client service."""
     self._display.close()
-    super(ClientService, self).close()
 
   def DisplayMessage(self, message, context):
     """Displays a text message on client machine.

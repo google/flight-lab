@@ -5,18 +5,23 @@
 # Run controller app:
 #   make run
 
+ifeq ($(OS),Windows_NT)
+	RequirementsFile := requirements-windows.txt
+else
+	RequirementsFile := requirements.txt
+endif
 
 init:
-  python -m pip install --upgrade pip
-  pip install -r requirements.txt
+	python -m pip install --upgrade pip
+	pip install -r $(RequirementsFile)
 
 build: proto-py
 
 run:
-  python main.py
+	python main.py
 
 run_server:
-  python main.py server
+	python main.py server
 
 proto-py:
-  cd ./protos && make
+	cd ./protos && make

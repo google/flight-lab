@@ -13,24 +13,31 @@
 # limitations under the License.
 """Factories for creating components."""
 
-import app
-import display
-import light
-import media
+import sys
 
 from common import pattern
+from components import app
+from components import display
+from components import light
+from components import media
 
 
 class ComponentFactory(pattern.Logger):
   """Factory for creating components."""
 
-  _MAPPING = {
-      'app': app.WindowsAppComponent,
-      'light': light.DMXLightComponent,
-      'projector': display.ProjectorComponent,
-      'sound': media.SoundComponent,
-      'commandline': app.CommandLineAppComponent,
-  }
+  def __init__(self, *args, **kwargs):
+    super(ComponentFactory, self).__init__(*args, **kwargs)
+    self._mapping = {
+        'app': app.AppComponent,
+        'light': light.DMXLightComponent,
+        'projector': display.ProjectorComponent,
+        'sound': media.SoundComponent,
+        'commandline': app.CommandLineComponent,
+    }
+
+    if sys.platform.startswith('win'):
+      import windows
+      self._mapping['windows_app'] = windows.WindowsAppComponent
 
   def get_settings(self, component_proto):
     """Gets component-specific configuration protobuf.
@@ -55,9 +62,10 @@ class ComponentFactory(pattern.Logger):
       specifc configuration.
     """
     kind = component_proto.WhichOneof('kind')
-    if kind not in self._MAPPING:
-      raise UnknownComponentException('Unknown component kind {0}'.format(kind))
-    return self._MAPPING[kind]
+    if kind not in self._mapping:
+      raise UnknownComponentException(
+          'Unknown component kind {0}'.format(kind))
+    return self._mapping[kind]
 
   def create_component(self, component_proto):
     """Creates corrsponding instance per component configuration protobuf.
