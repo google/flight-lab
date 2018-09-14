@@ -14,13 +14,13 @@
 """Controller server and client app."""
 
 import logging
-import socket
 import sys
 import threading
 import api
 import cherrypy
 
 from common import pattern
+from common import net
 from components import factory
 from concurrent import futures
 import controller
@@ -79,10 +79,9 @@ class ControllerApp(pattern.Logger):
       Exception: if configuration for current machine doesn't exist.
     """
     if not self._machine_config:
-      hostname = socket.gethostname()
-      ip = socket.gethostbyname(hostname)
-      self._machine_config = next(
-          (x for x in self.system_config.machines if x.ip == ip), None)
+      ip = net.get_ip()
+      self._machine_config = next((x for x in self.system_config.machines
+                                   if x.ip == ip), None)
       if not self._machine_config:
         raise Exception('No config found for this machine.')
     return self._machine_config
@@ -250,7 +249,8 @@ class ControllerClientApp(ControllerApp):
     self._server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     self._client_service = client.ClientService(
         server=self._server, machine_config=self.machine_config)
-    self._server.add_insecure_port('[::]:{0}'.format(_CLIENT_SERVICE_GRPC_PORT))
+    self._server.add_insecure_port(
+        '[::]:{0}'.format(_CLIENT_SERVICE_GRPC_PORT))
     self._server.start()
 
     # Start control client
@@ -279,7 +279,9 @@ class ControllerClientApp(ControllerApp):
       pattern.run_as_thread(
           name='{0}.on_command({1})'.format(component.name, command),
           target=component.on_command,
-          kwargs={'command': command})
+          kwargs={
+              'command': command
+          })
 
   def _on_component_status_changed(self, component):
     self._control_client.update_status(component.proto)

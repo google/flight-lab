@@ -26,6 +26,7 @@ import win32gui
 import win32process
 
 from common import pattern
+from utils import app
 
 _SW_SHOW = 5
 _SW_MINIMIZE = 6
@@ -191,7 +192,7 @@ class Window(pattern.EventEmitter, pattern.Worker, pattern.Logger):
     self._sleep(1)
 
 
-class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
+class WindowsApplication(app.Application):
   """Class to represent a Windows application.
 
   Events:
@@ -205,6 +206,7 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
                name,
                bin_path,
                arguments=[],
+               working_dir=None,
                restart_on_crash=False,
                start_minimized=False,
                *args,
@@ -220,85 +222,9 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
       start_minimized: if True, the application window will be minimized after
                        start.
     """
-    super(Application, self).__init__(
-        worker_name='Application ({0})'.format(name), *args, **kwargs)
-    self._name = name
-    self._bin_path = bin_path.lower()
-    self._arguments = arguments
-    self._restart_on_crash = restart_on_crash
+    super(WindowsApplication, self).__init__(name, bin_path, arguments,
+                                             restart_on_crash, *args, **kwargs)
     self._start_minimized = start_minimized
-    self._app_proc = None
-    self._process_window = None
-
-  @property
-  def name(self):
-    """Gets name of the application."""
-    return self._name
-
-  def stop(self):
-    """Stops the application."""
-    super(Application, self).stop()
-    self.kill()
-
-  def has_running_instance(self):
-    """Checks if any instance of the application is running."""
-    for proc in psutil.process_iter():
-      proc_exe = ''
-      try:
-        proc_exe = proc.exe()
-      except psutil.AccessDenied:
-        pass
-      if proc_exe.lower() == self._bin_path.lower():
-        return True
-    return False
-
-  def kill(self):
-    """Terminates all the applications of the same executable."""
-    while True:
-      proc = self._get_proc()
-      if not proc:
-        return
-
-      self.logger.debug('[App - {0}] Terminating instance (pid={1})...'.format(
-          self._name, proc.pid))
-      try:
-        proc.kill()
-      except psutil.NoSuchProcess:
-        self.logger.debug('[App - {0}] Instance exited.'.format(self._name))
-        return
-
-      self.logger.debug('[App - {0}] Waiting for instance to exit...'.format(
-          self._name))
-      while proc:
-        proc = self._get_proc()
-        if proc:
-          time.sleep(0.1)
-      self.logger.debug('[App - {0}] Instance exited.'.format(self._name))
-
-  def _on_start(self):
-    # Kill instance(s) that are not started here.
-    self.kill()
-    self._app_proc = self._launch_app()
-
-  def _on_run(self):
-    if self._app_proc:
-      if self._app_proc.poll() is not None:
-        self.logger.info('[App - {0}] Exited unexpectedly.'.format(self._name))
-        self._app_proc = None
-        self.emit('stopped', self)
-
-    if not self._app_proc:
-      if self._restart_on_crash:
-        self._app_proc = self._launch_app()
-
-    self._sleep(1)
-
-  def _on_stop(self):
-    if self._app_proc:
-      self.emit('stopping', self)
-      self._app_proc.kill()
-      self._app_proc = None
-      self.emit('stopped', self)
 
   def _launch_app(self):
     args = [self._bin_path] + self._arguments
@@ -315,8 +241,8 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
 
     try:
       proc = subprocess.Popen(
-          [self._bin_path] + self._arguments,
-          cwd=os.path.dirname(self._bin_path),
+          args,
+          cwd=self._working_dir,
           creationflags=subprocess.CREATE_NEW_CONSOLE,
           close_fds=True,
           startupinfo=info)
@@ -327,16 +253,3 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
 
     self.emit('started', self)
     return proc
-
-  def _get_proc(self):
-    for proc in psutil.process_iter():
-      proc_exe = ''
-      try:
-        proc_exe = proc.exe()
-      except psutil.NoSuchProcess:
-        pass
-      except psutil.AccessDenied:
-        pass
-      if proc_exe.lower() == self._bin_path:
-        return proc
-    return None

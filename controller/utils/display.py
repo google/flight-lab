@@ -17,7 +17,7 @@ import jinja2
 import tempfile
 
 from common import pattern
-from utils import windows
+from utils import app
 
 
 class Display(pattern.Closable):
@@ -38,7 +38,7 @@ class Display(pattern.Closable):
     self._chrome_path = chrome_path
     self._temp_path = tempfile.gettempdir()
     self._index_file = tempfile.mktemp(suffix='.html')
-    self._chrome_app = windows.Application(
+    self._chrome_app = app.Application(
         name='Browser',
         bin_path=chrome_path,
         arguments=[
@@ -50,7 +50,6 @@ class Display(pattern.Closable):
   def close(self):
     """Closes Chrome browser."""
     self._chrome_app.stop()
-    super(Display, self).close()
 
   def show_message(self, message, template_path='./data/display_message.html'):
     """Shows a text message in full screen.
@@ -60,7 +59,9 @@ class Display(pattern.Closable):
       template_path: a html template to use. It should contain "{{ message }}".
     """
     self._generate_page(
-        template_path=template_path, kwargs={'message': message})
+        template_path=template_path, kwargs={
+            'message': message
+        })
     self._relaunch()
 
   def show_image(self,
@@ -79,7 +80,9 @@ class Display(pattern.Closable):
                      "{{ image_path }}".
     """
     self._generate_page(
-        template_path=template_path, kwargs={'image_path': image_path})
+        template_path=template_path, kwargs={
+            'image_path': image_path
+        })
     self._relaunch()
 
   def _generate_page(self, template_path, kwargs={}):

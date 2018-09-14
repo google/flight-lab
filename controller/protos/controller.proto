@@ -53,8 +53,23 @@ message DMXLight {
   Status status = 2;
 }
 
-// Configuration for GUI app.
+// Configuration for any app.
 message App {
+  enum Status {
+    UNKNOWN = 0;
+    NOT_RUNNING = 1;
+    RUNNING = 2;
+  }
+
+  string executable_path = 1;
+  repeated string arguments = 2;
+  string working_dir = 3;
+  bool restart_on_crash = 4;
+  Status status = 5;
+}
+
+// Configuration for GUI app.
+message WindowsApp {
   enum Status {
     UNKNOWN = 0;
     NOT_RUNNING = 1;
@@ -67,13 +82,14 @@ message App {
     STOP_ONLY = 3;     // Only stops when system is off.
   }
 
-  string executable_path = 3;
-  repeated string arguments = 4;
-  bool restart_on_crash = 5;
-  bool start_minimized = 6;
-  repeated Window windows = 7;
-  Status status = 8;
-  RunOption run_option = 9;
+  string executable_path = 1;
+  repeated string arguments = 2;
+  string working_dir = 3;
+  bool restart_on_crash = 4;
+  bool start_minimized = 5;
+  repeated Window windows = 6;
+  Status status = 7;
+  RunOption run_option = 8;
 }
 
 // Configuration for GUI window alteration.
@@ -88,7 +104,7 @@ message Window {
   bool borderless = 8;
 }
 
-// Configuration for command line app.
+// Configuration for command line.
 message CommandLine {
   repeated string when_on = 1;   // command to run when system is on.
   repeated string when_off = 2;  // command to run when system is off.
@@ -123,8 +139,9 @@ message Component {
     Projector projector = 5;
     DMXLight light = 6;
     App app = 7;
-    Sound sound = 8;
-    CommandLine commandline = 9;
+    WindowsApp windows_app = 8;
+    Sound sound = 9;
+    CommandLine commandline = 10;
   }
 }
 

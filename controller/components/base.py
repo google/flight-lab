@@ -17,7 +17,7 @@ from common import pattern
 from protos import controller_pb2
 
 
-class Component(pattern.Logger, pattern.Closable, pattern.EventEmitter):
+class Component(pattern.Logger, pattern.EventEmitter):
   """Base class for all components.
 
   This base class provides:

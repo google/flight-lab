@@ -21,7 +21,7 @@ import "google/protobuf/empty.proto";
 package flightlab;
 
 // Service provided by client machine.
-service Clientervice {
+service ClientService {
   // Displays a text message.
   rpc DisplayMessage(Message) returns (GeneralResponse) {
   }
