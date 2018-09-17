@@ -12,7 +12,7 @@ else
 endif
 
 init:
-	python -m pip install --upgrade pip
+	python -m pip install --upgrade pip==9.0.1
 	pip install -r $(RequirementsFile)
 
 build: proto-py

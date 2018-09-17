@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='flightlab',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x10\x63ontroller.proto\x12\tflightlab\x1a\x1bgoogle/protobuf/empty.proto\"\x12\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\"\x88\x01\n\tProjector\x12\n\n\x02ip\x18\x03 \x01(\t\x12+\n\x06status\x18\x04 \x01(\x0e\x32\x1b.flightlab.Projector.Status\"B\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03OFF\x10\x01\x12\x0b\n\x07WARM_UP\x10\x02\x12\x06\n\x02ON\x10\x03\x12\r\n\tCOOL_DOWN\x10\x04\"k\n\x08\x44MXLight\x12\x0b\n\x03\x63om\x18\x01 \x01(\t\x12*\n\x06status\x18\x02 \x01(\x0e\x32\x1a.flightlab.DMXLight.Status\"&\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03OFF\x10\x01\x12\x06\n\x02ON\x10\x02\"\xbc\x01\n\x03\x41pp\x12\x17\n\x0f\x65xecutable_path\x18\x01 \x01(\t\x12\x11\n\targuments\x18\x02 \x03(\t\x12\x13\n\x0bworking_dir\x18\x03 \x01(\t\x12\x18\n\x10restart_on_crash\x18\x04 \x01(\x08\x12%\n\x06status\x18\x05 \x01(\x0e\x32\x15.flightlab.App.Status\"3\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0f\n\x0bNOT_RUNNING\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\"\x86\x03\n\nWindowsApp\x12\x17\n\x0f\x65xecutable_path\x18\x01 \x01(\t\x12\x11\n\targuments\x18\x02 \x03(\t\x12\x13\n\x0bworking_dir\x18\x03 \x01(\t\x12\x18\n\x10restart_on_crash\x18\x04 \x01(\x08\x12\x17\n\x0fstart_minimized\x18\x05 \x01(\x08\x12\"\n\x07windows\x18\x06 \x03(\x0b\x32\x11.flightlab.Window\x12,\n\x06status\x18\x07 \x01(\x0e\x32\x1c.flightlab.WindowsApp.Status\x12\x33\n\nrun_option\x18\x08 \x01(\x0e\x32\x1f.flightlab.WindowsApp.RunOption\"3\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0f\n\x0bNOT_RUNNING\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\"H\n\tRunOption\x12\n\n\x06NORMAL\x10\x00\x12\x10\n\x0cRUN_WHEN_OFF\x10\x01\x12\x0e\n\nRUN_ALWAYS\x10\x02\x12\r\n\tSTOP_ONLY\x10\x03\"\x8d\x01\n\x06Window\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x13\n\x0bwindow_name\x18\x03 \x01(\t\x12\x0c\n\x04left\x18\x04 \x01(\x05\x12\x0b\n\x03top\x18\x05 \x01(\x05\x12\r\n\x05width\x18\x06 \x01(\x05\x12\x0e\n\x06height\x18\x07 \x01(\x05\x12\x12\n\nborderless\x18\x08 \x01(\x08\"0\n\x0b\x43ommandLine\x12\x0f\n\x07when_on\x18\x01 \x03(\t\x12\x10\n\x08when_off\x18\x02 \x03(\t\"\x1b\n\x05Sound\x12\x12\n\nmedia_path\x18\x01 \x01(\t\"\xb4\x03\n\tComponent\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12+\n\x06status\x18\x04 \x01(\x0e\x32\x1b.flightlab.Component.Status\x12)\n\tprojector\x18\x05 \x01(\x0b\x32\x14.flightlab.ProjectorH\x00\x12$\n\x05light\x18\x06 \x01(\x0b\x32\x13.flightlab.DMXLightH\x00\x12\x1d\n\x03\x61pp\x18\x07 \x01(\x0b\x32\x0e.flightlab.AppH\x00\x12,\n\x0bwindows_app\x18\x08 \x01(\x0b\x32\x15.flightlab.WindowsAppH\x00\x12!\n\x05sound\x18\t \x01(\x0b\x32\x10.flightlab.SoundH\x00\x12-\n\x0b\x63ommandline\x18\n \x01(\x0b\x32\x16.flightlab.CommandLineH\x00\"I\n\x06Status\x12\x12\n\x0eNOT_APPLICABLE\x10\x00\x12\x0b\n\x07UNKNOWN\x10\x01\x12\x07\n\x03OFF\x10\x02\x12\r\n\tTRANSIENT\x10\x03\x12\x06\n\x02ON\x10\x04\x42\x06\n\x04kind\"\xa3\x01\n\x07Machine\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12(\n\ncomponents\x18\x04 \x03(\x0b\x32\x14.flightlab.Component\x12\x1e\n\x16\x63hrome_executable_path\x18\x05 \x01(\t\x12\x1f\n\x17last_heartbeat_timstamp\x18\x06 \x01(\x02\"\xc8\x01\n\x06System\x12&\n\x05state\x18\x01 \x01(\x0e\x32\x17.flightlab.System.State\x12\x1d\n\x04user\x18\x02 \x01(\x0b\x32\x0f.flightlab.User\x12$\n\x08machines\x18\x06 \x03(\x0b\x32\x12.flightlab.Machine\x12\x1b\n\x13master_machine_name\x18\x07 \x01(\t\"4\n\x05State\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03OFF\x10\x01\x12\r\n\tTRANSIENT\x10\x02\x12\x06\n\x02ON\x10\x03\"\x19\n\tMachineId\x12\x0c\n\x04name\x18\x01 \x01(\t\"\xba\x01\n\x0f\x43omponentStatus\x12\x0c\n\x04name\x18\x01 \x01(\t\x12+\n\x06status\x18\x02 \x01(\x0e\x32\x1b.flightlab.Component.Status\x12\x37\n\x10projector_status\x18\x03 \x01(\x0e\x32\x1b.flightlab.Projector.StatusH\x00\x12+\n\napp_status\x18\x04 \x01(\x0e\x32\x15.flightlab.App.StatusH\x00\x42\x06\n\x04kind\"S\n\rMachineStatus\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x34\n\x10\x63omponent_status\x18\x02 \x03(\x0b\x32\x1a.flightlab.ComponentStatus\"5\n\x0bSystemState\x12&\n\x05state\x18\x01 \x01(\x0e\x32\x17.flightlab.System.State\"\x91\x01\n\rSystemCommand\x12\x31\n\x07\x63ommand\x18\x01 \x01(\x0e\x32 .flightlab.SystemCommand.Command\"M\n\x07\x43ommand\x12\x0b\n\x07UNKNOWN\x10\x00\x12\t\n\x05START\x10\x01\x12\x08\n\x04STOP\x10\x02\x12\x0b\n\x07RESTART\x10\x03\x12\x08\n\x04\x45XIT\x10\x04\x12\t\n\x05\x44\x45\x42UG\x10\x64\x32\x91\x01\n\x0e\x43ontrolService\x12\x42\n\x0cUpdateStatus\x12\x18.flightlab.MachineStatus\x1a\x16.google.protobuf.Empty\"\x00\x12;\n\x05Watch\x12\x14.flightlab.MachineId\x1a\x18.flightlab.SystemCommand\"\x00\x30\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x10\x63ontroller.proto\x12\tflightlab\x1a\x1bgoogle/protobuf/empty.proto\"\x12\n\x04User\x12\n\n\x02id\x18\x01 \x01(\t\"\x88\x01\n\tProjector\x12\n\n\x02ip\x18\x03 \x01(\t\x12+\n\x06status\x18\x04 \x01(\x0e\x32\x1b.flightlab.Projector.Status\"B\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03OFF\x10\x01\x12\x0b\n\x07WARM_UP\x10\x02\x12\x06\n\x02ON\x10\x03\x12\r\n\tCOOL_DOWN\x10\x04\"k\n\x08\x44MXLight\x12\x0b\n\x03\x63om\x18\x01 \x01(\t\x12*\n\x06status\x18\x02 \x01(\x0e\x32\x1a.flightlab.DMXLight.Status\"&\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03OFF\x10\x01\x12\x06\n\x02ON\x10\x02\"\xba\x01\n\x06\x42\x61\x64ger\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x11\n\tkey_param\x18\x02 \x01(\t\x12\x15\n\rusb_vendor_id\x18\x03 \x01(\t\x12\x16\n\x0eusb_product_id\x18\x04 \x01(\t\x12(\n\x06status\x18\x05 \x01(\x0e\x32\x18.flightlab.Badger.Status\"7\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0e\n\nAUTHORIZED\x10\x01\x12\x10\n\x0cUNAUTHORIZED\x10\x02\"\xbc\x01\n\x03\x41pp\x12\x17\n\x0f\x65xecutable_path\x18\x01 \x01(\t\x12\x11\n\targuments\x18\x02 \x03(\t\x12\x13\n\x0bworking_dir\x18\x03 \x01(\t\x12\x18\n\x10restart_on_crash\x18\x04 \x01(\x08\x12%\n\x06status\x18\x05 \x01(\x0e\x32\x15.flightlab.App.Status\"3\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0f\n\x0bNOT_RUNNING\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\"\x86\x03\n\nWindowsApp\x12\x17\n\x0f\x65xecutable_path\x18\x01 \x01(\t\x12\x11\n\targuments\x18\x02 \x03(\t\x12\x13\n\x0bworking_dir\x18\x03 \x01(\t\x12\x18\n\x10restart_on_crash\x18\x04 \x01(\x08\x12\x17\n\x0fstart_minimized\x18\x05 \x01(\x08\x12\"\n\x07windows\x18\x06 \x03(\x0b\x32\x11.flightlab.Window\x12,\n\x06status\x18\x07 \x01(\x0e\x32\x1c.flightlab.WindowsApp.Status\x12\x33\n\nrun_option\x18\x08 \x01(\x0e\x32\x1f.flightlab.WindowsApp.RunOption\"3\n\x06Status\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x0f\n\x0bNOT_RUNNING\x10\x01\x12\x0b\n\x07RUNNING\x10\x02\"H\n\tRunOption\x12\n\n\x06NORMAL\x10\x00\x12\x10\n\x0cRUN_WHEN_OFF\x10\x01\x12\x0e\n\nRUN_ALWAYS\x10\x02\x12\r\n\tSTOP_ONLY\x10\x03\"\x8d\x01\n\x06Window\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x12\n\nclass_name\x18\x02 \x01(\t\x12\x13\n\x0bwindow_name\x18\x03 \x01(\t\x12\x0c\n\x04left\x18\x04 \x01(\x05\x12\x0b\n\x03top\x18\x05 \x01(\x05\x12\r\n\x05width\x18\x06 \x01(\x05\x12\x0e\n\x06height\x18\x07 \x01(\x05\x12\x12\n\nborderless\x18\x08 \x01(\x08\"0\n\x0b\x43ommandLine\x12\x0f\n\x07when_on\x18\x01 \x03(\t\x12\x10\n\x08when_off\x18\x02 \x03(\t\"\x1b\n\x05Sound\x12\x12\n\nmedia_path\x18\x01 \x01(\t\"\xd9\x03\n\tComponent\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\x12+\n\x06status\x18\x04 \x01(\x0e\x32\x1b.flightlab.Component.Status\x12)\n\tprojector\x18\x05 \x01(\x0b\x32\x14.flightlab.ProjectorH\x00\x12$\n\x05light\x18\x06 \x01(\x0b\x32\x13.flightlab.DMXLightH\x00\x12\x1d\n\x03\x61pp\x18\x07 \x01(\x0b\x32\x0e.flightlab.AppH\x00\x12,\n\x0bwindows_app\x18\x08 \x01(\x0b\x32\x15.flightlab.WindowsAppH\x00\x12!\n\x05sound\x18\t \x01(\x0b\x32\x10.flightlab.SoundH\x00\x12-\n\x0b\x63ommandline\x18\n \x01(\x0b\x32\x16.flightlab.CommandLineH\x00\x12#\n\x06\x62\x61\x64ger\x18\x0b \x01(\x0b\x32\x11.flightlab.BadgerH\x00\"I\n\x06Status\x12\x12\n\x0eNOT_APPLICABLE\x10\x00\x12\x0b\n\x07UNKNOWN\x10\x01\x12\x07\n\x03OFF\x10\x02\x12\r\n\tTRANSIENT\x10\x03\x12\x06\n\x02ON\x10\x04\x42\x06\n\x04kind\"\xa3\x01\n\x07Machine\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\n\n\x02ip\x18\x03 \x01(\t\x12(\n\ncomponents\x18\x04 \x03(\x0b\x32\x14.flightlab.Component\x12\x1e\n\x16\x63hrome_executable_path\x18\x05 \x01(\t\x12\x1f\n\x17last_heartbeat_timstamp\x18\x06 \x01(\x02\"\xc8\x01\n\x06System\x12&\n\x05state\x18\x01 \x01(\x0e\x32\x17.flightlab.System.State\x12\x1d\n\x04user\x18\x02 \x01(\x0b\x32\x0f.flightlab.User\x12$\n\x08machines\x18\x06 \x03(\x0b\x32\x12.flightlab.Machine\x12\x1b\n\x13master_machine_name\x18\x07 \x01(\t\"4\n\x05State\x12\x0b\n\x07UNKNOWN\x10\x00\x12\x07\n\x03OFF\x10\x01\x12\r\n\tTRANSIENT\x10\x02\x12\x06\n\x02ON\x10\x03\"\x19\n\tMachineId\x12\x0c\n\x04name\x18\x01 \x01(\t\"\xf6\x01\n\x0f\x43omponentStatus\x12\x0c\n\x04name\x18\x01 \x01(\t\x12+\n\x06status\x18\x02 \x01(\x0e\x32\x1b.flightlab.Component.Status\x12\x37\n\x10projector_status\x18\x03 \x01(\x0e\x32\x1b.flightlab.Projector.StatusH\x00\x12+\n\napp_status\x18\x04 \x01(\x0e\x32\x15.flightlab.App.StatusH\x00\x12:\n\x12windows_app_status\x18\x05 \x01(\x0e\x32\x1c.flightlab.WindowsApp.StatusH\x00\x42\x06\n\x04kind\"S\n\rMachineStatus\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x34\n\x10\x63omponent_status\x18\x02 \x03(\x0b\x32\x1a.flightlab.ComponentStatus\"5\n\x0bSystemState\x12&\n\x05state\x18\x01 \x01(\x0e\x32\x17.flightlab.System.State\"\x91\x01\n\rSystemCommand\x12\x31\n\x07\x63ommand\x18\x01 \x01(\x0e\x32 .flightlab.SystemCommand.Command\"M\n\x07\x43ommand\x12\x0b\n\x07UNKNOWN\x10\x00\x12\t\n\x05START\x10\x01\x12\x08\n\x04STOP\x10\x02\x12\x0b\n\x07RESTART\x10\x03\x12\x08\n\x04\x45XIT\x10\x04\x12\t\n\x05\x44\x45\x42UG\x10\x64\x32\x91\x01\n\x0e\x43ontrolService\x12\x42\n\x0cUpdateStatus\x12\x18.flightlab.MachineStatus\x1a\x16.google.protobuf.Empty\"\x00\x12;\n\x05Watch\x12\x14.flightlab.MachineId\x1a\x18.flightlab.SystemCommand\"\x00\x30\x01\x62\x06proto3')
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -86,6 +86,32 @@ _DMXLIGHT_STATUS = _descriptor.EnumDescriptor(
 )
 _sym_db.RegisterEnumDescriptor(_DMXLIGHT_STATUS)
 
+_BADGER_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='flightlab.Badger.Status',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='UNKNOWN', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='AUTHORIZED', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='UNAUTHORIZED', index=2, number=2,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=460,
+  serialized_end=515,
+)
+_sym_db.RegisterEnumDescriptor(_BADGER_STATUS)
+
 _APP_STATUS = _descriptor.EnumDescriptor(
   name='Status',
   full_name='flightlab.App.Status',
@@ -107,8 +133,8 @@ _APP_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=466,
-  serialized_end=517,
+  serialized_start=655,
+  serialized_end=706,
 )
 _sym_db.RegisterEnumDescriptor(_APP_STATUS)
 
@@ -133,8 +159,8 @@ _WINDOWSAPP_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=466,
-  serialized_end=517,
+  serialized_start=655,
+  serialized_end=706,
 )
 _sym_db.RegisterEnumDescriptor(_WINDOWSAPP_STATUS)
 
@@ -163,8 +189,8 @@ _WINDOWSAPP_RUNOPTION = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=838,
-  serialized_end=910,
+  serialized_start=1027,
+  serialized_end=1099,
 )
 _sym_db.RegisterEnumDescriptor(_WINDOWSAPP_RUNOPTION)
 
@@ -197,8 +223,8 @@ _COMPONENT_STATUS = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1491,
-  serialized_end=1564,
+  serialized_start=1717,
+  serialized_end=1790,
 )
 _sym_db.RegisterEnumDescriptor(_COMPONENT_STATUS)
 
@@ -227,8 +253,8 @@ _SYSTEM_STATE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1889,
-  serialized_end=1941,
+  serialized_start=2115,
+  serialized_end=2167,
 )
 _sym_db.RegisterEnumDescriptor(_SYSTEM_STATE)
 
@@ -265,8 +291,8 @@ _SYSTEMCOMMAND_COMMAND = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2368,
-  serialized_end=2445,
+  serialized_start=2654,
+  serialized_end=2731,
 )
 _sym_db.RegisterEnumDescriptor(_SYSTEMCOMMAND_COMMAND)
 
@@ -380,6 +406,66 @@ _DMXLIGHT = _descriptor.Descriptor(
 )
 
 
+_BADGER = _descriptor.Descriptor(
+  name='Badger',
+  full_name='flightlab.Badger',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='url', full_name='flightlab.Badger.url', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='key_param', full_name='flightlab.Badger.key_param', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='usb_vendor_id', full_name='flightlab.Badger.usb_vendor_id', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='usb_product_id', full_name='flightlab.Badger.usb_product_id', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='flightlab.Badger.status', index=4,
+      number=5, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _BADGER_STATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=329,
+  serialized_end=515,
+)
+
+
 _APP = _descriptor.Descriptor(
   name='App',
   full_name='flightlab.App',
@@ -435,8 +521,8 @@ _APP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=329,
-  serialized_end=517,
+  serialized_start=518,
+  serialized_end=706,
 )
 
 
@@ -517,8 +603,8 @@ _WINDOWSAPP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=520,
-  serialized_end=910,
+  serialized_start=709,
+  serialized_end=1099,
 )
 
 
@@ -597,8 +683,8 @@ _WINDOW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=913,
-  serialized_end=1054,
+  serialized_start=1102,
+  serialized_end=1243,
 )
 
 
@@ -635,8 +721,8 @@ _COMMANDLINE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1056,
-  serialized_end=1104,
+  serialized_start=1245,
+  serialized_end=1293,
 )
 
 
@@ -666,8 +752,8 @@ _SOUND = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1106,
-  serialized_end=1133,
+  serialized_start=1295,
+  serialized_end=1322,
 )
 
 
@@ -748,6 +834,13 @@ _COMPONENT = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='badger', full_name='flightlab.Component.badger', index=10,
+      number=11, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -764,8 +857,8 @@ _COMPONENT = _descriptor.Descriptor(
       name='kind', full_name='flightlab.Component.kind',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1136,
-  serialized_end=1572,
+  serialized_start=1325,
+  serialized_end=1798,
 )
 
 
@@ -830,8 +923,8 @@ _MACHINE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1575,
-  serialized_end=1738,
+  serialized_start=1801,
+  serialized_end=1964,
 )
 
 
@@ -883,8 +976,8 @@ _SYSTEM = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1741,
-  serialized_end=1941,
+  serialized_start=1967,
+  serialized_end=2167,
 )
 
 
@@ -914,8 +1007,8 @@ _MACHINEID = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1943,
-  serialized_end=1968,
+  serialized_start=2169,
+  serialized_end=2194,
 )
 
 
@@ -954,6 +1047,13 @@ _COMPONENTSTATUS = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='windows_app_status', full_name='flightlab.ComponentStatus.windows_app_status', index=4,
+      number=5, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -969,8 +1069,8 @@ _COMPONENTSTATUS = _descriptor.Descriptor(
       name='kind', full_name='flightlab.ComponentStatus.kind',
       index=0, containing_type=None, fields=[]),
   ],
-  serialized_start=1971,
-  serialized_end=2157,
+  serialized_start=2197,
+  serialized_end=2443,
 )
 
 
@@ -1007,8 +1107,8 @@ _MACHINESTATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2159,
-  serialized_end=2242,
+  serialized_start=2445,
+  serialized_end=2528,
 )
 
 
@@ -1038,8 +1138,8 @@ _SYSTEMSTATE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2244,
-  serialized_end=2297,
+  serialized_start=2530,
+  serialized_end=2583,
 )
 
 
@@ -1070,14 +1170,16 @@ _SYSTEMCOMMAND = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2300,
-  serialized_end=2445,
+  serialized_start=2586,
+  serialized_end=2731,
 )
 
 _PROJECTOR.fields_by_name['status'].enum_type = _PROJECTOR_STATUS
 _PROJECTOR_STATUS.containing_type = _PROJECTOR
 _DMXLIGHT.fields_by_name['status'].enum_type = _DMXLIGHT_STATUS
 _DMXLIGHT_STATUS.containing_type = _DMXLIGHT
+_BADGER.fields_by_name['status'].enum_type = _BADGER_STATUS
+_BADGER_STATUS.containing_type = _BADGER
 _APP.fields_by_name['status'].enum_type = _APP_STATUS
 _APP_STATUS.containing_type = _APP
 _WINDOWSAPP.fields_by_name['windows'].message_type = _WINDOW
@@ -1092,6 +1194,7 @@ _COMPONENT.fields_by_name['app'].message_type = _APP
 _COMPONENT.fields_by_name['windows_app'].message_type = _WINDOWSAPP
 _COMPONENT.fields_by_name['sound'].message_type = _SOUND
 _COMPONENT.fields_by_name['commandline'].message_type = _COMMANDLINE
+_COMPONENT.fields_by_name['badger'].message_type = _BADGER
 _COMPONENT_STATUS.containing_type = _COMPONENT
 _COMPONENT.oneofs_by_name['kind'].fields.append(
   _COMPONENT.fields_by_name['projector'])
@@ -1111,6 +1214,9 @@ _COMPONENT.fields_by_name['sound'].containing_oneof = _COMPONENT.oneofs_by_name[
 _COMPONENT.oneofs_by_name['kind'].fields.append(
   _COMPONENT.fields_by_name['commandline'])
 _COMPONENT.fields_by_name['commandline'].containing_oneof = _COMPONENT.oneofs_by_name['kind']
+_COMPONENT.oneofs_by_name['kind'].fields.append(
+  _COMPONENT.fields_by_name['badger'])
+_COMPONENT.fields_by_name['badger'].containing_oneof = _COMPONENT.oneofs_by_name['kind']
 _MACHINE.fields_by_name['components'].message_type = _COMPONENT
 _SYSTEM.fields_by_name['state'].enum_type = _SYSTEM_STATE
 _SYSTEM.fields_by_name['user'].message_type = _USER
@@ -1119,12 +1225,16 @@ _SYSTEM_STATE.containing_type = _SYSTEM
 _COMPONENTSTATUS.fields_by_name['status'].enum_type = _COMPONENT_STATUS
 _COMPONENTSTATUS.fields_by_name['projector_status'].enum_type = _PROJECTOR_STATUS
 _COMPONENTSTATUS.fields_by_name['app_status'].enum_type = _APP_STATUS
+_COMPONENTSTATUS.fields_by_name['windows_app_status'].enum_type = _WINDOWSAPP_STATUS
 _COMPONENTSTATUS.oneofs_by_name['kind'].fields.append(
   _COMPONENTSTATUS.fields_by_name['projector_status'])
 _COMPONENTSTATUS.fields_by_name['projector_status'].containing_oneof = _COMPONENTSTATUS.oneofs_by_name['kind']
 _COMPONENTSTATUS.oneofs_by_name['kind'].fields.append(
   _COMPONENTSTATUS.fields_by_name['app_status'])
 _COMPONENTSTATUS.fields_by_name['app_status'].containing_oneof = _COMPONENTSTATUS.oneofs_by_name['kind']
+_COMPONENTSTATUS.oneofs_by_name['kind'].fields.append(
+  _COMPONENTSTATUS.fields_by_name['windows_app_status'])
+_COMPONENTSTATUS.fields_by_name['windows_app_status'].containing_oneof = _COMPONENTSTATUS.oneofs_by_name['kind']
 _MACHINESTATUS.fields_by_name['component_status'].message_type = _COMPONENTSTATUS
 _SYSTEMSTATE.fields_by_name['state'].enum_type = _SYSTEM_STATE
 _SYSTEMCOMMAND.fields_by_name['command'].enum_type = _SYSTEMCOMMAND_COMMAND
@@ -1132,6 +1242,7 @@ _SYSTEMCOMMAND_COMMAND.containing_type = _SYSTEMCOMMAND
 DESCRIPTOR.message_types_by_name['User'] = _USER
 DESCRIPTOR.message_types_by_name['Projector'] = _PROJECTOR
 DESCRIPTOR.message_types_by_name['DMXLight'] = _DMXLIGHT
+DESCRIPTOR.message_types_by_name['Badger'] = _BADGER
 DESCRIPTOR.message_types_by_name['App'] = _APP
 DESCRIPTOR.message_types_by_name['WindowsApp'] = _WINDOWSAPP
 DESCRIPTOR.message_types_by_name['Window'] = _WINDOW
@@ -1167,6 +1278,13 @@ DMXLight = _reflection.GeneratedProtocolMessageType('DMXLight', (_message.Messag
   # @@protoc_insertion_point(class_scope:flightlab.DMXLight)
   ))
 _sym_db.RegisterMessage(DMXLight)
+
+Badger = _reflection.GeneratedProtocolMessageType('Badger', (_message.Message,), dict(
+  DESCRIPTOR = _BADGER,
+  __module__ = 'controller_pb2'
+  # @@protoc_insertion_point(class_scope:flightlab.Badger)
+  ))
+_sym_db.RegisterMessage(Badger)
 
 App = _reflection.GeneratedProtocolMessageType('App', (_message.Message,), dict(
   DESCRIPTOR = _APP,
@@ -1267,8 +1385,8 @@ _CONTROLSERVICE = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=2448,
-  serialized_end=2593,
+  serialized_start=2734,
+  serialized_end=2879,
   methods=[
   _descriptor.MethodDescriptor(
     name='UpdateStatus',
