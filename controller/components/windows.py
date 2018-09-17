@@ -42,17 +42,19 @@ class WindowsAppComponent(base.Component):
     """
     super(WindowsAppComponent, self).__init__(proto, *args, **kwargs)
 
-    if self.settings.run_option == controller_pb2.App.NORMAL:
+    if self.settings.run_option == controller_pb2.WindowsApp.NORMAL:
       self._status_mapping = {
-          controller_pb2.App.UNKNOWN: controller_pb2.Component.UNKNOWN,
-          controller_pb2.App.RUNNING: controller_pb2.Component.ON,
-          controller_pb2.App.NOT_RUNNING: controller_pb2.Component.OFF,
+          controller_pb2.WindowsApp.UNKNOWN: controller_pb2.Component.UNKNOWN,
+          controller_pb2.WindowsApp.RUNNING: controller_pb2.Component.ON,
+          controller_pb2.WindowsApp.NOT_RUNNING: controller_pb2.Component.OFF,
       }
     else:
       self._status_mapping = {
-          controller_pb2.App.UNKNOWN: controller_pb2.Component.NOT_APPLICABLE,
-          controller_pb2.App.RUNNING: controller_pb2.Component.NOT_APPLICABLE,
-          controller_pb2.App.NOT_RUNNING:
+          controller_pb2.WindowsApp.UNKNOWN:
+          controller_pb2.Component.NOT_APPLICABLE,
+          controller_pb2.WindowsApp.RUNNING:
+          controller_pb2.Component.NOT_APPLICABLE,
+          controller_pb2.WindowsApp.NOT_RUNNING:
           controller_pb2.Component.NOT_APPLICABLE,
       }
 
@@ -83,7 +85,7 @@ class WindowsAppComponent(base.Component):
     self._monitor = threading.Timer(1, self._check_status)
     self._monitor.start()
 
-    if self.settings.run_option == controller_pb2.App.RUN_ALWAYS:
+    if self.settings.run_option == controller_pb2.WindowsApp.RUN_ALWAYS:
       self._start_app()
 
   def close(self):
@@ -96,40 +98,40 @@ class WindowsAppComponent(base.Component):
 
   def _check_status(self):
     if self._app.has_running_instance():
-      new_status = controller_pb2.App.RUNNING
+      new_status = controller_pb2.WindowsApp.RUNNING
     else:
-      new_status = controller_pb2.App.NOT_RUNNING
+      new_status = controller_pb2.WindowsApp.NOT_RUNNING
     if self.settings.status != new_status:
       self.settings.status = new_status
       self.proto.status = self._status_mapping[new_status]
       self.emit('status_changed', self)
 
   def _start(self):
-    if self.settings.run_option == controller_pb2.App.RUN_WHEN_OFF:
+    if self.settings.run_option == controller_pb2.WindowsApp.RUN_WHEN_OFF:
       self._stop_app()
-    elif self.settings.run_option == controller_pb2.App.STOP_ONLY:
+    elif self.settings.run_option == controller_pb2.WindowsApp.STOP_ONLY:
       pass
-    elif self.settings.run_option == controller_pb2.App.RUN_ALWAYS:
+    elif self.settings.run_option == controller_pb2.WindowsApp.RUN_ALWAYS:
       pass
     else:
       self._start_app()
 
   def _stop(self):
-    if self.settings.run_option == controller_pb2.App.RUN_WHEN_OFF:
+    if self.settings.run_option == controller_pb2.WindowsApp.RUN_WHEN_OFF:
       self._start_app()
-    elif self.settings.run_option == controller_pb2.App.STOP_ONLY:
+    elif self.settings.run_option == controller_pb2.WindowsApp.STOP_ONLY:
       self._stop_app()
-    elif self.settings.run_option == controller_pb2.App.RUN_ALWAYS:
+    elif self.settings.run_option == controller_pb2.WindowsApp.RUN_ALWAYS:
       pass
     else:
       self._stop_app()
 
   def _restart(self):
-    if self.settings.run_option == controller_pb2.App.RUN_WHEN_OFF:
+    if self.settings.run_option == controller_pb2.WindowsApp.RUN_WHEN_OFF:
       pass
-    elif self.settings.run_option == controller_pb2.App.STOP_ONLY:
+    elif self.settings.run_option == controller_pb2.WindowsApp.STOP_ONLY:
       pass
-    elif self.settings.run_option == controller_pb2.App.RUN_ALWAYS:
+    elif self.settings.run_option == controller_pb2.WindowsApp.RUN_ALWAYS:
       pass
     else:
       self._stop_app()
@@ -171,11 +173,12 @@ class WindowsAppComponent(base.Component):
           height=config.height)
 
   def _on_app_started(self, app):
-    self.settings.status = controller_pb2.App.RUNNING
-    self.proto.status = self._status_mapping[controller_pb2.App.RUNNING]
+    self.settings.status = controller_pb2.WindowsApp.RUNNING
+    self.proto.status = self._status_mapping[controller_pb2.WindowsApp.RUNNING]
     self.emit('status_changed', self)
 
   def _on_app_stopped(self, app):
-    self.settings.status = controller_pb2.App.NOT_RUNNING
-    self.proto.status = self._status_mapping[controller_pb2.App.NOT_RUNNING]
+    self.settings.status = controller_pb2.WindowsApp.NOT_RUNNING
+    self.proto.status = self._status_mapping[
+        controller_pb2.WindowsApp.NOT_RUNNING]
     self.emit('status_changed', self)
