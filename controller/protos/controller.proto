@@ -192,6 +192,7 @@ message ComponentStatus {
   oneof kind {
     Projector.Status projector_status = 3;
     App.Status app_status = 4;
+    WindowsApp.Status windows_app_status = 5;
   }
 }
 
