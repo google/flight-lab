@@ -53,6 +53,20 @@ message DMXLight {
   Status status = 2;
 }
 
+// Configuration for badge reader.
+message Badger {
+  enum Status {
+    UNKNOWN = 0;
+    AUTHORIZED = 1;
+    UNAUTHORIZED = 2;
+  }
+  string url = 1;
+  string key_param = 2;
+  string usb_vendor_id = 3;
+  string usb_product_id = 4;
+  Status status = 5;
+}
+
 // Configuration for any app.
 message App {
   enum Status {
@@ -142,6 +156,7 @@ message Component {
     WindowsApp windows_app = 8;
     Sound sound = 9;
     CommandLine commandline = 10;
+    Badger badger = 11;
   }
 }
 

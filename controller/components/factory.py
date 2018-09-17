@@ -20,6 +20,7 @@ from components import app
 from components import display
 from components import light
 from components import media
+from components import badger
 
 
 class ComponentFactory(pattern.Logger):
@@ -33,6 +34,7 @@ class ComponentFactory(pattern.Logger):
         'projector': display.ProjectorComponent,
         'sound': media.SoundComponent,
         'commandline': app.CommandLineComponent,
+        'badger': badger.BadgeReaderComponent,
     }
 
     if sys.platform.startswith('win'):
