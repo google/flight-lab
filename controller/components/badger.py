@@ -36,37 +36,41 @@ class BadgeReaderComponent(base.Component):
     super(BadgeReaderComponent, self).__init__(proto, *args, **kwargs)
     self._validator = badger.BadgeValidator(self.settings.url, self.settings.key_param)
     self._reader = badger.BadgeReader(usb_vendor_id=self.settings.usb_vendor_id, usb_product_id=self.settings.usb_product_id)
-    self._reader.start()
     self._reader.on('read_success', self._on_read_success)
+    self._reader.start()
 
-    self._auth_timeout_seconds = 30
-    self._deauth = threading.Timer(1, self._deauthorize)
-    self._deauth.start()
+    self._deauth = None
+    self._auth_timeout_seconds = 10
 
   def _on_read_success(self, reader):
-    badge_id = reader.last_badge_id()
+    badge_id = self._reader.last_badge_id
+    self.logger.info("Badge %s Read Successfully", badge_id)
     if self._validator.validate(badge_id):
-      new_status = controller_pb2.Badger.AUTHORIZED
-      self._last_auth = int(time.time())
-      if self.settings.status != new_status:
-        self.settings.status = new_status
-        self.emit('status_changed', self)
+      self.logger.info("Badge Validated")
+      if self._deauth:
+        self._deauth.cancel()
+      self.settings.status = controller_pb2.Badger.AUTHORIZED
+      self.emit('status_changed', self)
+      self._deauth = threading.Timer(self._auth_timeout_seconds, self._deauthorize)
+      self._deauth.start()
+    else:
+      self.logger.info("Invalid Badge")
+      self.settings.status = controller_pb2.Badger.UNAUTHORIZED
+      self.emit('status_changed', self)
 
   def _deauthorize(self):
-      """Ensures status is changed from AUTHORIZED to UNAUTHORIZED after a set time.
+      self.logger.info("Deauthorizing")
+      """Ensures status is changed from to UNAUTHORIZED.
 
       Emits:
           status_changed
       """
-      if self.settings.status == controller_pb2.Badger.AUTHORIZED:
-        if self._last_auth + self._auth_timeout_seconds > int(time.time()):
-            self._last_auth = None
-            self.settings.status = controller_pb2.Badger.UNAUTHORIZED
-            self.emit('status_changed', self)
+      self.settings.status = controller_pb2.Badger.UNAUTHORIZED
+      self.emit('status_changed', self)
 
   def close(self):
     """Stops the badge reader and deauthorization thread."""
-    self._deauth.cancel()
-    self._reader.cancel()
+    if self._deauth:
+      self._deauth.cancel()
     super(BadgeReaderComponent, self).close()
 

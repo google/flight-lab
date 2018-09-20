@@ -14,6 +14,7 @@
 """ Utility for reading USB badge scanners with authorization via HTTP APIs."""
 
 import requests
+import time
 
 from common import pattern
 from evdev import InputDevice, ecodes, list_devices
@@ -81,11 +82,14 @@ class BadgeReader(pattern.Worker, pattern.EventEmitter):
   def _on_start(self):
     devices = [InputDevice(path) for path in list_devices()]
     for device in devices:
-        if device.info.vendor == int(self._usb_vendor_id, 16) and device.info.product == int(self._usb_product_id, 16):
-            self._device = device
-            break
+      if device.info.vendor == int(self._usb_vendor_id, 16) and device.info.product == int(self._usb_product_id, 16):
+        self._device = device
+        self.logger.info("Badge reader device found.")
+        break
     if self._device == None:
-        raise BadgeReaderException("Unable to locate badge reader device ({0}, {1}).".format(self._usb_vendor_id, self._usb_product_id))
+      self.logger.warn("Device may be disconnected. Attempting to reconnect...")
+      time.sleep(10)
+      self._on_start()
 
   def _on_run(self):
     """Read and format an RFID badge ID
@@ -102,14 +106,17 @@ class BadgeReader(pattern.Worker, pattern.EventEmitter):
         if event.type == ecodes.EV_KEY and event.value == 1:
           if event.code in (self._key_codes):
             badge_id += self._key_codes[event.code]
-            if event.code is ecodes.KEY_ENTER:
-              self._last_badge_id = badge_id
-              self.emit('read_success')
-              badge_id = ""
-    except:
-      raise BadgeReaderException("Unable to read data from badge reader.")
-    finally:
+            continue
+          if event.code is ecodes.KEY_ENTER:
+            self._last_badge_id = badge_id
+            self.emit('read_success', self)
+            badge_id = ""
       self._device.ungrab()
+      return True
+    except:
+      self.logger.warn("Device may be disconnected. Attempting to reconnect...")
+      time.sleep(10)
+      self._on_start()
 
   @property
   def last_badge_id(self):
