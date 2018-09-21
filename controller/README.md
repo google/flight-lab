@@ -45,14 +45,41 @@ configuration, it:
 
     https://www.microsoft.com/en-us/download/details.aspx?id=44266
 
-4.  Run "make init"
+## Build
 
-5.  Run "make build"
+1. Install all the dependencies:
 
-## To Run Server
+	```shell
+	make init
+	```
 
-Run "make run_server"
+1. Build source code:
 
-## To Run Client
+	```shell
+	make build
+	```
 
-Run "make run"
+
+## Install
+
+To have server or client run automatically on reboot:
+
+```shell
+make install-client
+```
+
+```shell
+make install-server
+```
+
+# Development
+
+To run server or client manually:
+
+```shell
+make run-client
+```
+
+```shell
+make run-server
+```

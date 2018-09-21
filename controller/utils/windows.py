@@ -222,8 +222,9 @@ class WindowsApplication(app.Application):
       start_minimized: if True, the application window will be minimized after
                        start.
     """
-    super(WindowsApplication, self).__init__(name, bin_path, arguments,
-                                             restart_on_crash, *args, **kwargs)
+    super(WindowsApplication,
+          self).__init__(name, bin_path, arguments, working_dir,
+                         restart_on_crash, *args, **kwargs)
     self._start_minimized = start_minimized
 
   def _launch_app(self):

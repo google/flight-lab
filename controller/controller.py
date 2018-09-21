@@ -46,6 +46,7 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
 
     self._command = None
     self._command_changed_events = []
+    self._notification_queues = []
 
   def send_command(self, command):
     """Sends command to all clients.
@@ -102,6 +103,18 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
     self.emit('status_changed')
 
     return empty_pb2.Empty()
+
+  def WatchStatus(self, _, context):
+    queue = Queue.Queue()
+    self._notification_queues.append(queue)
+    try:
+      while not self._stopped:
+        try:
+          yield queue.get(block=true, timeout=1)
+        except Queue.Empty:
+          pass
+    finally:
+      self._notification_queues.remove(queue)
 
   def Watch(self, machine_id, context):
     """Handler for Watch gRPC call.
