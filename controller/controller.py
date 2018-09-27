@@ -93,7 +93,6 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
           machine.name, component.name,
           controller_pb2.Component.Status.Name(component_status.status)))
 
-      print component_status
       kind = component_status.WhichOneof('kind')
       status = getattr(component_status, kind)
       kind = component.WhichOneof('kind')
