@@ -26,12 +26,12 @@ proto-py:
 
 install-client:
 	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/client/g template.service > /tmp/controller-client.service
-	sudo cp /tmp/controller-client.service /etc/systemd/system/controller-client.service
+	sudo mv /tmp/controller-client.service /etc/systemd/system/controller-client.service
 	sudo systemctl enable controller-client.service
 
 install-server:
 	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/server/g template.service > /tmp/controller-server.service
-	sudo cp /tmp/controller-server.service /etc/systemd/system/controller-server.service
+	sudo mv /tmp/controller-server.service /etc/systemd/system/controller-server.service
 	sudo systemctl enable controller-server.service
 
 run-client: build
