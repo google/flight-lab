@@ -22,8 +22,8 @@ from protos import controller_pb2
 from protos import controller_pb2_grpc
 
 
-class ControlService(controller_pb2_grpc.ControlServiceServicer, pattern.Logger,
-                     pattern.EventEmitter):
+class ControlService(controller_pb2_grpc.ControlServiceServicer,
+                     pattern.Logger, pattern.EventEmitter):
   """Provider for flightlab.ControlService.
 
   Events:
@@ -46,6 +46,7 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer, pattern.Logger,
 
     self._command = None
     self._command_changed_events = []
+    self._notification_queues = []
 
   def send_command(self, command):
     """Sends command to all clients.
@@ -82,9 +83,8 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer, pattern.Logger,
       return
 
     for component_status in machine_status.component_status:
-      component = next(
-          (x for x in machine.components if x.name == component_status.name),
-          None)
+      component = next((x for x in machine.components
+                        if x.name == component_status.name), None)
       if not component:
         self.logger.warn('Component %s not found.', component_status.name)
         continue
@@ -103,6 +103,18 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer, pattern.Logger,
     self.emit('status_changed')
 
     return empty_pb2.Empty()
+
+  def WatchStatus(self, _, context):
+    queue = Queue.Queue()
+    self._notification_queues.append(queue)
+    try:
+      while not self._stopped:
+        try:
+          yield queue.get(block=true, timeout=1)
+        except Queue.Empty:
+          pass
+    finally:
+      self._notification_queues.remove(queue)
 
   def Watch(self, machine_id, context):
     """Handler for Watch gRPC call.
@@ -196,6 +208,12 @@ class ControlClient(pattern.Logger):
       component_status.projector_status = component_proto.projector.status
     elif kind == 'app':
       component_status.app_status = component_proto.app.status
+    elif kind == 'windows_app':
+      component_status.windows_app_status = component_proto.windows_app.status
+    elif kind == 'badger':
+      component_status.badger_status = component_proto.badger.status
+    else:
+      self.logger.warn('%s is not a supported component status', kind)
 
     machine_status = controller_pb2.MachineStatus(
         name=self._machine_config.name, component_status=[component_status])
@@ -218,6 +236,10 @@ class ControlClient(pattern.Logger):
         component_status = machine_status.component_status.add(
             name=component.name, status=component.status)
         component_status.app_status = component.app.status
+      elif kind == 'windows_app':
+        component_status = machine_status.component_status.add(
+            name=component.name, status=component.status)
+        component_status.windows_app_status = component.windows_app.status
 
     try:
       self._stub.UpdateStatus(machine_status)
@@ -246,7 +268,9 @@ class ControlClient(pattern.Logger):
       response = self._stub.Watch(
           controller_pb2.MachineId(name=self._machine_config.name))
       self._thread = threading.Thread(
-          target=self._watch, kwargs={'response': response})
+          target=self._watch, kwargs={
+              'response': response
+          })
       self._thread.start()
 
       self.update_all_status()

@@ -72,15 +72,7 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
 
   def has_running_instance(self):
     """Checks if any instance of the application is running."""
-    for proc in psutil.process_iter():
-      proc_exe = ''
-      try:
-        proc_exe = proc.exe()
-      except psutil.AccessDenied:
-        pass
-      if proc_exe.lower() == self._bin_path.lower():
-        return True
-    return False
+    return self._get_proc() is not None
 
   def kill(self):
     """Terminates all the applications of the same executable."""
@@ -154,9 +146,7 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
       cmd = ''
       try:
         cmd = (' '.join(proc.cmdline())).lower()
-      except psutil.NoSuchProcess:
-        pass
-      except psutil.AccessDenied:
+      except:
         pass
       if cmd == target_cmd:
         return proc

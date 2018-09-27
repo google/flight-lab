@@ -11,17 +11,38 @@ else
 	RequirementsFile := requirements.txt
 endif
 
+SRC_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
 init:
-	python -m pip install --upgrade pip
+	python -m pip install --upgrade pip==9.0.1
 	pip install -r $(RequirementsFile)
+	# For gRPC-web support
+	sudo apt-get install nginx
 
 build: proto-py
 
-run:
-	python main.py
-
-run_server:
-	python main.py server
-
 proto-py:
 	cd ./protos && make
+
+install-client:
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/client/g template.service > /tmp/controller-client.service
+	sudo mv /tmp/controller-client.service /etc/systemd/system/controller-client.service
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/client/g template.rsyslog > /tmp/controller-client.conf
+	sudo mv /tmp/controller-client.conf /etc/rsyslog.d/controller-client.conf
+	sudo systemctl enable controller-client.service
+	sudo systemctl restart rsyslog
+
+install-server:
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/server/g template.service > /tmp/controller-server.service
+	sudo mv /tmp/controller-server.service /etc/systemd/system/controller-server.service
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/server/g template.rsyslog > /tmp/controller-server.conf
+	sudo mv /tmp/controller-server.conf /etc/rsyslog.d/controller-server.conf
+	sudo systemctl enable controller-server.service
+	sudo systemctl restart rsyslog
+
+run-client: build
+	python main.py
+
+run-server: build
+	python main.py server
+

@@ -53,6 +53,20 @@ message DMXLight {
   Status status = 2;
 }
 
+// Configuration for badge reader.
+message Badger {
+  enum Status {
+    UNKNOWN = 0;
+    AUTHORIZED = 1;
+    UNAUTHORIZED = 2;
+  }
+  string url = 1;
+  string key_param = 2;
+  string usb_vendor_id = 3;
+  string usb_product_id = 4;
+  Status status = 5;
+}
+
 // Configuration for any app.
 message App {
   enum Status {
@@ -142,6 +156,7 @@ message Component {
     WindowsApp windows_app = 8;
     Sound sound = 9;
     CommandLine commandline = 10;
+    Badger badger = 11;
   }
 }
 
@@ -172,11 +187,11 @@ message System {
 
 service ControlService {
   // Updates status of components from client to server.
-  rpc UpdateStatus(MachineStatus) returns (google.protobuf.Empty) {
-  }
+  rpc UpdateStatus(MachineStatus) returns (google.protobuf.Empty);
+  // Listens to status of components from server.
+  rpc WatchStatus(google.protobuf.Empty) returns (stream ComponentStatus);
   // Listens to command from server.
-  rpc Watch(MachineId) returns (stream SystemCommand) {
-  }
+  rpc Watch(MachineId) returns (stream SystemCommand);
 }
 
 // Client identification.
@@ -192,6 +207,8 @@ message ComponentStatus {
   oneof kind {
     Projector.Status projector_status = 3;
     App.Status app_status = 4;
+    WindowsApp.Status windows_app_status = 5;
+    Badger.Status badger_status = 6;
   }
 }
 
