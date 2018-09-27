@@ -172,11 +172,11 @@ message System {
 
 service ControlService {
   // Updates status of components from client to server.
-  rpc UpdateStatus(MachineStatus) returns (google.protobuf.Empty) {
-  }
+  rpc UpdateStatus(MachineStatus) returns (google.protobuf.Empty);
+  // Listens to status of components from server.
+  rpc WatchStatus(google.protobuf.Empty) returns (stream ComponentStatus);
   // Listens to command from server.
-  rpc Watch(MachineId) returns (stream SystemCommand) {
-  }
+  rpc Watch(MachineId) returns (stream SystemCommand);
 }
 
 // Client identification.
@@ -192,6 +192,7 @@ message ComponentStatus {
   oneof kind {
     Projector.Status projector_status = 3;
     App.Status app_status = 4;
+    WindowsApp.Status windows_app_status = 5;
   }
 }
 
