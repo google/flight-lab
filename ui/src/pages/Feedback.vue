@@ -61,20 +61,22 @@ export default {
   },
   methods: {
     submit() {
+      // Show 'Please choose a rating :)' the message
       if (!this.chosenRating) {
         this.submitClicked = true;
         return;
       } else {
         this.submitClicked = false;
       }
-      if (this.chosenRating || this.feedbackText) {
-        firebase.firestore().collection('feedbacks').add({
-          rating: this.chosenRating,
-          text: this.feedbackText,
-          timestamp: new Date().getTime(),
-        });
-      }
 
+      // Save the rating and feedback
+      firebase.firestore().collection('feedbacks').add({
+        rating: this.chosenRating,
+        text: this.feedbackText,
+        timestamp: new Date().getTime(),
+      });
+
+      // Save the issue.
       if (this.issueText) {
         this.addKnownIssue();
       } else {

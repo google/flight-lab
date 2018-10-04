@@ -5,7 +5,7 @@
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
 const admin = require('firebase-admin');
-const CONTACT_EMAIL = <YOUE_EMAIL_HERE>;
+const CONTACT_EMAIL = <TO_EMAIL_HERE>;
 
 admin.initializeApp(functions.config().firebase);
 
@@ -31,7 +31,7 @@ const sendFeedbackEmail = (subject, feedback) => {
     const mailTransport = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'gflightsim.email@gmail.com',
+        user: <FROM_EMAIL_HERE>,
         pass: password,
       },
     });

@@ -15,26 +15,45 @@ limitations under the License.
  -->
 
 <template lang="pug">
-div
-  v-btn(v-if="type === 'inline'", color="error", @click.native="sendFeedback") Report a bug?
-  v-btn.fab(v-else, color="error", @click.native="sendFeedback", fab, fixed, right)
+v-dialog(v-model='showDialog', :persistent="true", max-width='400')
+  v-btn(, v-if="type === 'inline'"slot='activator', color="error", @click="openDialog") Report a bug?
+  v-btn.fab( v-else,slot='activator', color="error", @click="openDialog", fab, fixed, right)
     v-icon bug_report
-
+  v-card
+    v-card-title.headline Report bugs
+    v-card-text
+      .mx-4: v-text-field(label="Any feedback to the team?", textarea, v-model="text")
+    v-card-actions
+      v-spacer
+      v-btn(@click.native='showDialog = false') Cancel
+      v-btn(@click.native='sendFeedback', color="primary") send
 </template>
 
 
 <script>
 const axios = require("axios");
+const firebase = require("firebase");
+require("firebase/firestore");
 
 import {BACKEND_URL} from '../../project.config.js';
 
 export default {
   props: ['type'],
+  data(){
+    return {
+      showDialog: false,
+      text: '',
+    }
+  },
   methods: {
     sendFeedback() {
       axios.get(BACKEND_URL + '/config').then((response) => {
-        const configData = JSON.stringify(response.data);
-        
+        const config = JSON.stringify(response.data);
+        firebase.firestore().collection('known_issues').doc('user_input').set({
+          title: this.text,
+          timestamp: new Date().getTime(),
+          config,
+        });
       });
     },
   },
