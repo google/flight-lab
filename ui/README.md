@@ -20,9 +20,8 @@ shows basic status information.
   1. APIs & Services -> Credentials. Create an API key and an OAuth client ID (Web client).
   1. Copy the API key and the ClientId to `project.config.js`.
   1. Update `CALENDAR_ID` in `project.config.js`.
-1. Set up bug reporting. (Google internal only)
-  1. Register project in Google Feedback.
-  1. Update `BUG_PROJECT_ID` in `project.config.js`.
+1. Set up bug reporting.
+  1. Update the TO_EMAIL and FROM_EMAIL in `/functions/index.js`.
 1. Update the `BACKEND_URL` in `project.config.js`.
 
 ## App Development

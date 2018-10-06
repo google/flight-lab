@@ -16,8 +16,8 @@ limitations under the License.
 
 <template lang="pug">
 v-dialog(v-model='showDialog', :persistent="true", max-width='400')
-  v-btn(, v-if="type === 'inline'"slot='activator', color="error", @click="openDialog") Report a bug?
-  v-btn.fab( v-else,slot='activator', color="error", @click="openDialog", fab, fixed, right)
+  v-btn(v-if="type === 'inline'", slot='activator', color="error", @click="openDialog") Report a bug?
+  v-btn.fab(v-else, slot='activator', color="error", @click="openDialog", fab, fixed, right)
     v-icon bug_report
   v-card
     v-card-title.headline Report bugs

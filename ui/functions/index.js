@@ -5,7 +5,8 @@
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
 const admin = require('firebase-admin');
-const CONTACT_EMAIL = <TO_EMAIL_HERE>;
+const TO_EMAIL = ;
+const FROM_EMAIL = ;
 
 admin.initializeApp(functions.config().firebase);
 
@@ -31,13 +32,13 @@ const sendFeedbackEmail = (subject, feedback) => {
     const mailTransport = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: <FROM_EMAIL_HERE>,
+        user: FROM_EMAIL,
         pass: password,
       },
     });
 
     const mailOptions = {
-      to: [CONTACT_EMAIL],
+      to: [TO_EMAIL],
       subject: `[FligheLab] New ${subject} received`,
       text: `${feedback}`,
     };
