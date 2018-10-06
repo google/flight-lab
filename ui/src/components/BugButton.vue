@@ -24,7 +24,7 @@ v-dialog(v-model='showDialog', :persistent="true", max-width='400')
     v-card-actions
       v-spacer
       v-btn(@click.native='showDialog = false') Cancel
-      v-btn(@click.native='sendFeedback', color="primary") send
+      v-btn(@click.native='sendFeedback', color="primary", :disabled="states[buttonState].disabled") {{states[buttonState].text}}
 </template>
 
 
@@ -35,22 +35,47 @@ require("firebase/firestore");
 
 import {BACKEND_URL} from '../../project.config.js';
 
+const STATES = {
+  'idle': {
+    disabled: false,
+    text: 'send',
+  },
+  'sending': {
+    disabled: true,
+    text: 'sending',
+  },
+  'error': {
+    disabled: false,
+    text: 'Error. Retry.',
+  },
+}
+
 export default {
+  props: ['type'],
   data(){
     return {
       showDialog: false,
       text: '',
+      buttonState: 'idle',
+      states: STATES,
     }
   },
   methods: {
     sendFeedback() {
+      this.buttonState = 'sending';
       axios.get(BACKEND_URL + '/config').then((response) => {
-        const config = JSON.stringify(response.data);
-        firebase.firestore().collection('known_issues').doc('user_input').set({
+        return JSON.stringify(response.data);
+      }).then((config) => {
+        return firebase.firestore().collection('known_issues').doc('user_input').set({
           title: this.text,
           timestamp: new Date().getTime(),
           config,
         });
+      }).then(() => {
+        this.showDialog = false;
+        this.buttonState = 'idle';
+      }).catch(() => {
+        this.buttonState = 'error';
       });
     },
   },

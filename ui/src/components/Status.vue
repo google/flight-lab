@@ -54,6 +54,7 @@ require("firebase/firestore");
 
 import {BACKEND_URL} from '../../project.config.js';
 import StatusText from './StatusText.vue';
+const TIMEOUT = 60 * 1000; // 1m
 
 export default {
   components: {StatusText},
@@ -140,8 +141,7 @@ export default {
     setTransientTimer(isStarting) {
       // This is a function for controlling a timer, which tracks if the
       // TRANSIENT state stay for longer than 1 min.
-      const TIMEOUT = 5 * 1000; // 20s
-
+      
       // isStarting == false means the system is ON or OFF now. Stop the timeout timer
       if (!isStarting) {
         clearTimeout(this.transientTimer);

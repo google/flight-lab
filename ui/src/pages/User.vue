@@ -144,8 +144,7 @@ export default {
 
       axios.get(BACKEND_URL + '/system/off')
         .then((response) => {
-          if (this.currentState == 'on' || this.currentState == 'transient') {
-            // Route to the feedback page immediatly.
+          if (this.currentState !== 'error') {
             this.$router.push('/feedback');
           }
         })
