@@ -16,13 +16,11 @@ limitations under the License.
 
 <template lang="pug">
 v-dialog(v-model='showDialog', :persistent="true", max-width='400')
-  v-btn(v-if="type === 'inline'", slot='activator', color="error", @click="openDialog") Report a bug?
-  v-btn.fab(v-else, slot='activator', color="error", @click="openDialog", fab, fixed, right)
+  v-btn.fab(slot='activator', color="error", fab, fixed, right)
     v-icon bug_report
   v-card
-    v-card-title.headline Report bugs
-    v-card-text
-      .mx-4: v-text-field(label="Any feedback to the team?", textarea, v-model="text")
+    v-card-title Report bugs
+    .mx-4: v-text-field(label="Bug details", textarea, v-model="text")
     v-card-actions
       v-spacer
       v-btn(@click.native='showDialog = false') Cancel
@@ -38,7 +36,6 @@ require("firebase/firestore");
 import {BACKEND_URL} from '../../project.config.js';
 
 export default {
-  props: ['type'],
   data(){
     return {
       showDialog: false,
@@ -61,9 +58,6 @@ export default {
 </script>
 
 <style scoped>
-div {
-  display: inline;
-}
 .fab {
   bottom: 20px;
 }

@@ -33,8 +33,6 @@ main
 
 
 <script>
-import BugButton from '../components/BugButton.vue'
-
 const firebase = require("firebase");
 require("firebase/firestore");
 
@@ -44,7 +42,6 @@ const icon = {
 }
 
 export default {
-  components: {BugButton},
   data(){
     return {
       state: undefined,
