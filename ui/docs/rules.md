@@ -1,8 +1,0 @@
-- Have a current reservation
-- Operate flight simulator with care
-- Do **not** alter software or hardware
-- Do **not** power cycle projector manually
-- Respect next person's reservation
-- Turned everything off before you leave
-- Report new issues
-- Keep room clean

@@ -10,19 +10,19 @@ shows basic status information.
 
 ## Project setup
 
+1. Update the `BACKEND_URL` in `project.config.js`.
 1. Set up Firebase project.
   1. Create a [Firebase](console.firebase.google.com) project.
   1. Enable Database -> Firestore.
   1. From Firebase console page: Add app -> Web. Copy the config object into `project.config.js`.
-1. Set up Calendar access.
+1. Set up Calendar access. (Optional)
   1. Open [Google Cloud](https://console.cloud.google.com/) and open the project you created in Firebase.
   1. APIs & Services -> API library. Enable the Google Calendar API.
   1. APIs & Services -> Credentials. Create an API key and an OAuth client ID (Web client).
   1. Copy the API key and the ClientId to `project.config.js`.
   1. Update `CALENDAR_ID` in `project.config.js`.
-1. Set up bug reporting.
+1. Set up bug reporting. (Optional)
   1. Update the TO_EMAIL and FROM_EMAIL in `/functions/index.js`.
-1. Update the `BACKEND_URL` in `project.config.js`.
 
 ## App Development
 
@@ -34,7 +34,7 @@ npm install
 npm start
 ```
 
-## Deployment the notification cloud function
+## Deploying the notification cloud function
 
 1. Init the app using firebase CLI.
 1. Update the CONTACT_EMAIL in `/functions/index.js`.

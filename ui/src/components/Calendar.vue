@@ -26,7 +26,9 @@ limitations under the License.
 
 <script>
 import moment from 'moment'
-import {CLIENT_ID, API_KEY, DISCOVERY_DOCS, SCOPES, CALENDAR_ID} from '../../project.config.js';
+import {CLIENT_ID, API_KEY, CALENDAR_ID} from '../../project.config.js';
+const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest"];
+const SCOPES = "https://www.googleapis.com/auth/calendar.readonly";
 
 export default {
   data() {
