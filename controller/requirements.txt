@@ -7,3 +7,4 @@ netifaces
 playsound
 psutil
 pyserial
+python-gflags

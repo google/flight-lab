@@ -176,7 +176,7 @@ service ControlService {
   // Listens to status of components from server.
   rpc WatchStatus(google.protobuf.Empty) returns (stream ComponentStatus);
   // Listens to command from server.
-  rpc Watch(MachineId) returns (stream SystemCommand);
+  rpc WatchCommand(MachineId) returns (stream SystemCommand);
 }
 
 // Client identification.

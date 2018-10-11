@@ -13,6 +13,7 @@
 # limitations under the License.
 """Controller server and client app."""
 
+import gflags
 import logging
 import sys
 import threading
@@ -29,14 +30,19 @@ import flask_cors
 import grpc
 from protos import controller_pb2
 from services import client
+from google.apputils import appcommands
 from google.protobuf import text_format
 
-_CONFIG_PATH = 'config.protoascii'
+FLAGS = gflags.FLAGS
+
 _CONTROL_SERVICE_GRPC_PORT = 9000
 _CLIENT_SERVICE_GRPC_PORT = 9001
 
+gflags.DEFINE_string('config', 'config.protoascii',
+                     'Path to system configuration file.')
 
-class ControllerApp(pattern.Logger):
+
+class ControllerApp(pattern.Logger, appcommands.Cmd):
   """Base class for server and client app.
 
   The base class provides common infrastructure, including component factory and
@@ -51,7 +57,7 @@ class ControllerApp(pattern.Logger):
     self._master_machine_config = None
 
     self._system_config = controller_pb2.System()
-    with open(_CONFIG_PATH, 'r') as f:
+    with open(FLAGS.config, 'r') as f:
       config_text = f.read()
       text_format.Merge(config_text, self._system_config)
 
@@ -108,7 +114,7 @@ class ControllerApp(pattern.Logger):
     """Whether current machine is master machine."""
     return self.machine_config.name == self.system_config.master_machine_name
 
-  def run(self):
+  def Run(self, argv):
     """Runs the app."""
     self._initialize()
     self.logger.info('Running...')
@@ -299,11 +305,11 @@ def init_log():
 
 def main(argv):
   init_log()
-  if len(argv) > 1 and argv[1] == 'server':
-    ControllerServerApp().run()
-  else:
-    ControllerClientApp().run()
+  appcommands.AddCmd(
+      'server', ControllerServerApp, help_full='Runs controller server.')
+  appcommands.AddCmd(
+      'client', ControllerClientApp, help_full='Runs controller client.')
 
 
 if __name__ == '__main__':
-  main(sys.argv)
+  appcommands.Run()

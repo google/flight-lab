@@ -1,9 +1,9 @@
 [Unit]
-Description=Controller {TYPE}
+Description={NAME}
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python2.7 main.py {TYPE} > /var/log/controller-{TYPE}.log 2>&1
+ExecStart={CMDLINE} > /var/log/{NAME}.log 2>&1
 WorkingDirectory={SRC_DIR}
 StandardOutput=inherit
 StandardError=inherit
