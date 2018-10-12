@@ -2,6 +2,7 @@ cherrypy==10.2.1
 enum
 flask
 flask-cors
+google-apputils
 grpcio-tools
 netifaces
 playsound

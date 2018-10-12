@@ -3,12 +3,12 @@ Description={NAME}
 After=network.target
 
 [Service]
-ExecStart={CMDLINE} > /var/log/{NAME}.log 2>&1
+ExecStart={CMDLINE}
 WorkingDirectory={SRC_DIR}
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=pi
+User={USER}
 
 [Install]
 WantedBy=multi-user.target
