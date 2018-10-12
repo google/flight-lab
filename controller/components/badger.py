@@ -58,8 +58,8 @@ class BadgeReaderComponent(base.Component):
 
     if self._deauth:
       self._deauth.cancel()
-      self._deauth = threading.Timer(self._AUTH_TIMEOUT_SEC, self._deauthorize)
-      self._deauth.start()
+    self._deauth = threading.Timer(self._AUTH_TIMEOUT_SEC, self._deauthorize)
+    self._deauth.start()
 
   def _deauthorize(self):
       self.logger.info("Deauthorizing")
