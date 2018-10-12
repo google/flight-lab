@@ -5,8 +5,9 @@ After=network.target
 [Service]
 ExecStart={CMDLINE}
 WorkingDirectory={SRC_DIR}
-StandardOutput=inherit
-StandardError=inherit
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=controller-{TYPE}
 Restart=always
 User={USER}
 

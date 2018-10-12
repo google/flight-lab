@@ -1,0 +1,2 @@
+if $programname == 'controller-{TYPE}' then /var/log/controller-{TYPE}.log
+& stop

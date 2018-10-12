@@ -27,7 +27,10 @@ install-client:
 		-e 's,{USER},${USER},g' \
 		template.service > /tmp/controller-client.service
 	sudo mv /tmp/controller-client.service /etc/systemd/system/controller-client.service
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/client/g template.rsyslog > /tmp/controller-client.conf
+	sudo mv /tmp/controller-client.conf /etc/rsyslog.d/controller-client.conf
 	sudo systemctl enable controller-client.service
+	sudo systemctl restart rsyslog
 
 install-server:
 	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g \
@@ -36,7 +39,10 @@ install-server:
 		-e 's,{USER},${USER},g' \
 		template.service > /tmp/controller-server.service
 	sudo mv /tmp/controller-server.service /etc/systemd/system/controller-server.service
-	#sudo systemctl enable controller-server.service
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/server/g template.rsyslog > /tmp/controller-server.conf
+	sudo mv /tmp/controller-server.conf /etc/rsyslog.d/controller-server.conf
+	sudo systemctl enable controller-server.service
+	sudo systemctl restart rsyslog
 
 	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g \
 		-e 's,{NAME},Nginx,g' \
@@ -51,3 +57,4 @@ run-client: build
 
 run-server: build
 	python main.py server
+

@@ -230,6 +230,10 @@ class ControlClient(pattern.Logger):
       component_status.app_status = component_proto.app.status
     elif kind == 'windows_app':
       component_status.windows_app_status = component_proto.windows_app.status
+    elif kind == 'badger':
+      component_status.badger_status = component_proto.badger.status
+    else:
+      self.logger.warn('%s is not a supported component status', kind)
 
     machine_status = controller_pb2.MachineStatus(
         name=self._machine_config.name, component_status=[component_status])
