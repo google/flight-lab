@@ -14,25 +14,37 @@ endif
 SRC_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 init:
-	python -m pip install --upgrade pip
+	python -m pip install --upgrade pip==9.0.1
 	pip install -r $(RequirementsFile)
-	# For gRPC-web support
-	sudo apt-get install nginx
 
-build: proto-py
-
-proto-py:
-	cd ./protos && make
+build:
+	pushd ./protos && make proto-py && popd
 
 install-client:
-	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/client/g template.service > /tmp/controller-client.service
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g \
+		-e 's,{NAME},Controller-Client,g' \
+		-e 's,{CMDLINE},'"/usr/bin/python2.7 main.py client",g \
+		-e 's,{USER},${USER},g' \
+		template.service > /tmp/controller-client.service
 	sudo mv /tmp/controller-client.service /etc/systemd/system/controller-client.service
 	sudo systemctl enable controller-client.service
 
 install-server:
-	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g -e s/{TYPE}/server/g template.service > /tmp/controller-server.service
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g \
+		-e 's,{NAME},Controller-Server,g' \
+		-e 's,{CMDLINE},'"/usr/bin/python2.7 main.py server",g \
+		-e 's,{USER},${USER},g' \
+		template.service > /tmp/controller-server.service
 	sudo mv /tmp/controller-server.service /etc/systemd/system/controller-server.service
-	sudo systemctl enable controller-server.service
+	#sudo systemctl enable controller-server.service
+
+	sed -e 's,{SRC_DIR},'"$(SRC_DIR)",g \
+		-e 's,{NAME},Nginx,g' \
+		-e 's,{CMDLINE},'"/usr/local/nginx/sbin/nginx -p /tmp -c ${SRC_DIR}/nginx.conf",g \
+		-e 's,{USER},${USER},g' \
+		template.service > /tmp/nginx.service
+	sudo mv /tmp/nginx.service /etc/systemd/system/nginx.service
+	sudo systemctl enable nginx.service
 
 run-client: build
 	python main.py
