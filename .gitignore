@@ -3,6 +3,10 @@
 controller/config.protoascii
 *_pb2.py
 *_pb2_grpc.py
+.DS_Store
+node_modules/
+dist/
+npm-debug.log
 build
 bin
 out
