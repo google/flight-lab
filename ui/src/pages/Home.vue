@@ -51,8 +51,8 @@ import Rules from '../../docs/rules.md'
 import BugButton from '../components/BugButton.vue'
 import Calendar from '../components/Calendar.vue'
 import KnownIssues from '../components/KnownIssues.vue'
-import {BADGER_URL} from '../../project.config.js';
 
+import {BACKEND_URL} from '../../project.config.js';
 const axios = require("axios");
 export default {
   components: {Rules, BugButton, Calendar, KnownIssues},
@@ -71,9 +71,9 @@ export default {
   },
   methods: {
     getBadgeStatus(){
-      axios.get(BADGER_URL).then((response) => {
+      axios.get(BACKEND_URL + '/config').then((response) => {
         const status = response.data.machines
-            .find(machine => machine.name === 'Badger').components
+            .find(machine => machine.name === 'Badge Reader').components
             .find(component => component.name === 'BadgeReader')
             .badger.status;
         this.badgeState = status;

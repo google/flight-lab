@@ -22,7 +22,6 @@ limitations under the License.
 // Required to run the app.
 export const BACKEND_URL = ;  // e.g. http://192.168.1.1:8080 or http://localhost:8000
 export const FIREBASE_CONFIG = ;  // The firebase config object. https://firebase.google.com/docs/web/setup
-export const BADGER_URL = ;  // The badge reader URL
 
 // Optional - for the calendar feature.
 export const CLIENT_ID = ;  // Google Cloud OAuth client id
