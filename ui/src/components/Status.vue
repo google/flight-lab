@@ -131,6 +131,7 @@ export default {
       let total = 0;
       let finished = 0;
       machines.forEach((machine) => {
+        if (!machine.components) return;
         machine.components.forEach((component) => {
           if (component.status) total ++;
           if (component.status === 'ON') finished ++;
