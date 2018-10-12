@@ -14,6 +14,7 @@
 """gRPC service handler and client warapper for server-client communications."""
 
 import grpc
+import Queue
 import threading
 from google.protobuf import empty_pb2
 
@@ -100,24 +101,43 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
       settings.status = status
       component.status = component_status.status
 
+      for queue in self._notification_queues:
+        self.logger.info('Notifying clients watching for status...')
+        try:
+          queue.put(component_status, block=False)
+        except Queue.Full:
+          pass
+
     self.emit('status_changed')
 
     return empty_pb2.Empty()
 
   def WatchStatus(self, _, context):
-    queue = Queue.Queue()
+    """Handler for WatchStatus gRPC call.
+
+    This handler streams component status update from server to client.
+
+    Args:
+      context: gRPC context.
+    Yields:
+      flightlab.ComponentStatus.
+    """
+    self.logger.info('New client starts to watch status...')
+    queue = Queue.Queue(maxsize=100)
     self._notification_queues.append(queue)
     try:
       while not self._stopped:
         try:
-          yield queue.get(block=true, timeout=1)
+          status = queue.get(block=True, timeout=1)
+          self.logger.info('Notifying client status change...')
+          yield status
         except Queue.Empty:
           pass
     finally:
       self._notification_queues.remove(queue)
 
-  def Watch(self, machine_id, context):
-    """Handler for Watch gRPC call.
+  def WatchCommand(self, machine_id, context):
+    """Handler for WatchCommand gRPC call.
 
     This handler streams commands from server to client.
 
@@ -265,7 +285,7 @@ class ControlClient(pattern.Logger):
     """Attempt to reconnect to server and retry after an interval if fails."""
     self._thread = None
     try:
-      response = self._stub.Watch(
+      response = self._stub.WatchCommand(
           controller_pb2.MachineId(name=self._machine_config.name))
       self._thread = threading.Thread(
           target=self._watch, kwargs={

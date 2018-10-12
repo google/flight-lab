@@ -3,9 +3,11 @@ enum
 evdev
 flask
 flask-cors
+google-apputils
 grpcio-tools
 netifaces
 playsound
 psutil
 pyserial
+python-gflags
 requests

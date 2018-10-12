@@ -1,16 +1,15 @@
 [Unit]
-Description=Controller {TYPE}
+Description={NAME}
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python2.7 main.py {TYPE}
+ExecStart={CMDLINE}
 WorkingDirectory={SRC_DIR}
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=controller-{TYPE}
 Restart=always
-User=pi
+User={USER}
 
 [Install]
 WantedBy=multi-user.target
-
