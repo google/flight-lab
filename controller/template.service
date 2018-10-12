@@ -1,14 +1,14 @@
 [Unit]
-Description=Controller {TYPE}
+Description={NAME}
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python2.7 main.py {TYPE} > /var/log/controller-{TYPE}.log 2>&1
+ExecStart={CMDLINE}
 WorkingDirectory={SRC_DIR}
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
-User=pi
+User={USER}
 
 [Install]
 WantedBy=multi-user.target
