@@ -6,3 +6,6 @@
 node_modules/
 dist/
 npm-debug.log
+build
+bin
+out
