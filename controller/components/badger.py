@@ -33,8 +33,6 @@ class BadgeReaderComponent(base.Component):
     """Create a BadgeReaderComponent instance.
 
     Args:
-      self._deauth = threading.Timer(self._AUTH_TIMEOUT_SEC, self._deauthorize)
-      self._deauth.start()
       proto: flightlab.BadgeReader protobuf.
     """
     super(BadgeReaderComponent, self).__init__(proto, *args, **kwargs)
