@@ -59,6 +59,7 @@ message Badger {
     UNKNOWN = 0;
     AUTHORIZED = 1;
     UNAUTHORIZED = 2;
+    AUTH_ERROR = 3;
   }
   string url = 1;
   string key_param = 2;

@@ -33,6 +33,8 @@ class BadgeReaderComponent(base.Component):
     """Create a BadgeReaderComponent instance.
 
     Args:
+      self._deauth = threading.Timer(self._AUTH_TIMEOUT_SEC, self._deauthorize)
+      self._deauth.start()
       proto: flightlab.BadgeReader protobuf.
     """
     super(BadgeReaderComponent, self).__init__(proto, *args, **kwargs)
@@ -47,25 +49,26 @@ class BadgeReaderComponent(base.Component):
     self.logger.info("Badge %s Read Successfully", badge_id)
     if self._validator.validate(badge_id):
       self.logger.info("Badge Validated")
-      if self._deauth:
-        self._deauth.cancel()
       self.settings.status = controller_pb2.Badger.AUTHORIZED
       self.emit('status_changed', self)
-      self._deauth = threading.Timer(self._AUTH_TIMEOUT_SEC, self._deauthorize)
-      self._deauth.start()
     else:
       self.logger.info("Invalid Badge")
       self.settings.status = controller_pb2.Badger.UNAUTHORIZED
       self.emit('status_changed', self)
 
+    if self._deauth:
+      self._deauth.cancel()
+      self._deauth = threading.Timer(self._AUTH_TIMEOUT_SEC, self._deauthorize)
+      self._deauth.start()
+
   def _deauthorize(self):
       self.logger.info("Deauthorizing")
-      """Ensures status is changed from to UNAUTHORIZED.
+      """Ensures status is changed to UNKNOWN, which is the default state.
 
       Emits:
           status_changed
       """
-      self.settings.status = controller_pb2.Badger.UNAUTHORIZED
+      self.settings.status = controller_pb2.Badger.UNKNOWN
       self.emit('status_changed', self)
 
   def close(self):
