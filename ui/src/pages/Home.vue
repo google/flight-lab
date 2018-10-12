@@ -18,9 +18,9 @@ limitations under the License.
 main.pb-5
   img.logo(src="../assets/flightlablogo.png")
   h1.mt-0.display-3 Flight Lab
-  p.headline.my-3 A simulation & learning experience at Google
-  v-dialog(v-model='showDialog', :persistent="true", max-width='400')
-    v-btn.my-3(large, slot='activator', color='primary') Let's fly!
+  p.title.my-3 A simulation & learning experience at Google
+  p.headline.my-4.warning--text Swipe badge to start!
+  v-dialog(v-model='showAuthorizedDialog', :persistent="true", max-width='400')
     v-card
       v-card-text
         p.title Flight Lab rules
@@ -29,8 +29,15 @@ main.pb-5
         known-issues.ml-4
       v-card-actions
         v-spacer
-        v-btn(@click.native='showDialog = false') Cancel
+        v-btn(@click.native='showAuthorizedDialog = false') Cancel
         v-btn(color="primary", to='/user') Agree
+  v-dialog(v-model='showUnauthorizedDialog', :persistent="true", max-width='400')
+    v-card
+      v-card-text
+        p Unauthorized. Please contact the team to get access.
+      v-card-actions
+        v-spacer
+        v-btn(@click.native='showUnauthorizedDialog = false') Close
   p Powered by Google Flight Lab.
   bug-button
   .calendar-container
@@ -45,12 +52,46 @@ import BugButton from '../components/BugButton.vue'
 import Calendar from '../components/Calendar.vue'
 import KnownIssues from '../components/KnownIssues.vue'
 
+const axios = require("axios");
 export default {
   components: {Rules, BugButton, Calendar, KnownIssues},
   data(){
     return {
-      showDialog: false,
+      showUnauthorizedDialog: false,
+      showAuthorizedDialog: false,
     }
+  },
+  created() {
+    this.getBadgeStatus();
+    this.interval = setInterval(() => {this.getBadgeStatus()}, 1000);
+  },
+  beforeDestroy() {
+    clearInterval(this.interval);
+  },
+  methods: {
+    getBadgeStatus(){
+      axios.get('http://192.168.1.5:8080/config').then((response) => {
+        const status = response.data.machines
+            .find(machine => machine.name === 'Badger').components
+            .find(component => component.name === 'BadgeReader')
+            .badger.status;
+        this.badgeState = status;
+        switch(status) {
+          case 'AUTHORIZED':
+            this.showAuthorizedDialog = true;
+            this.showUnauthorizedDialog = false;
+            break;
+          case 'UNAUTHORIZED':
+            this.showUnauthorizedDialog = true;
+            this.showAuthorizedDialog = false;
+            break;
+          default:
+            this.showAuthorizedDialog = false;
+            this.showUnauthorizedDialog = false;
+        }
+      })
+      .catch(console.error);
+    },
   },
 };
 </script>
