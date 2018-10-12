@@ -52,8 +52,11 @@ class BadgeValidator(pattern.EventEmitter):
     Returns:
       Response boolean.
     """
-    r = requests.get(url = self._url, params = {self._key_param: badge_id})
-    return r.status_code >= 200 and r.status_code < 300
+    try:
+      r = requests.get(url = self._url, params = {self._key_param: badge_id})
+      return r.status_code >= 200 and r.status_code < 300
+    except requests.ConnectionError:
+      return false
 
 class BadgeReader(pattern.Worker, pattern.EventEmitter):
   """Worker that monitors the badge reader and emits the badge ID on success.
@@ -72,7 +75,6 @@ class BadgeReader(pattern.Worker, pattern.EventEmitter):
     """
     super(BadgeReader, self).__init__(worker_name='BadgeReader', *args, **kwargs)
     self._device = None
-    self._last_badge_id = None
     self._usb_vendor_id = usb_vendor_id
     self._usb_product_id = usb_product_id
     self._key_codes = {
@@ -97,7 +99,7 @@ class BadgeReader(pattern.Worker, pattern.EventEmitter):
     Raises:
       BadgeReaderException: When device is unavailable, or reading fails.
     Emits:
-      badge_read: A badge was successfully read.
+      read_success: A badge was successfully read.
     """
     try:
       self._device.grab()
@@ -108,8 +110,7 @@ class BadgeReader(pattern.Worker, pattern.EventEmitter):
             badge_id += self._key_codes[event.code]
             continue
           if event.code is ecodes.KEY_ENTER:
-            self._last_badge_id = badge_id
-            self.emit('read_success', self)
+            self.emit('read_success', self, badge_id)
             badge_id = ""
       self._device.ungrab()
       return True
@@ -117,9 +118,4 @@ class BadgeReader(pattern.Worker, pattern.EventEmitter):
       self.logger.warn("Device may be disconnected. Attempting to reconnect...")
       time.sleep(10)
       self._on_start()
-
-  @property
-  def last_badge_id(self):
-    """Retrieve the last sucessfully read badge ID."""
-    return self._last_badge_id
 

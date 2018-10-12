@@ -62,8 +62,8 @@ message Badger {
   }
   string url = 1;
   string key_param = 2;
-  string usb_vendor_id = 3;
-  string usb_product_id = 4;
+  string usb_vendor_id = 3; // Hex representation
+  string usb_product_id = 4; // Hex representation
   Status status = 5;
 }
 

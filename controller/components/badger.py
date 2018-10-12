@@ -27,6 +27,8 @@ class BadgeReaderComponent(base.Component):
     "status_changed": when badge scan is authorized or authorization has expired.
   """
 
+  _AUTH_TIMEOUT_SEC = 10
+
   def __init__(self, proto, *args, **kwargs):
     """Create a BadgeReaderComponent instance.
 
@@ -34,16 +36,14 @@ class BadgeReaderComponent(base.Component):
       proto: flightlab.BadgeReader protobuf.
     """
     super(BadgeReaderComponent, self).__init__(proto, *args, **kwargs)
+    self._deauth = None
     self._validator = badger.BadgeValidator(self.settings.url, self.settings.key_param)
     self._reader = badger.BadgeReader(usb_vendor_id=self.settings.usb_vendor_id, usb_product_id=self.settings.usb_product_id)
     self._reader.on('read_success', self._on_read_success)
     self._reader.start()
 
-    self._deauth = None
-    self._auth_timeout_seconds = 10
 
-  def _on_read_success(self, reader):
-    badge_id = self._reader.last_badge_id
+  def _on_read_success(self, reader, badge_id):
     self.logger.info("Badge %s Read Successfully", badge_id)
     if self._validator.validate(badge_id):
       self.logger.info("Badge Validated")
@@ -51,7 +51,7 @@ class BadgeReaderComponent(base.Component):
         self._deauth.cancel()
       self.settings.status = controller_pb2.Badger.AUTHORIZED
       self.emit('status_changed', self)
-      self._deauth = threading.Timer(self._auth_timeout_seconds, self._deauthorize)
+      self._deauth = threading.Timer(self._AUTH_TIMEOUT_SEC, self._deauthorize)
       self._deauth.start()
     else:
       self.logger.info("Invalid Badge")
