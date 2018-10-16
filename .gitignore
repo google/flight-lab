@@ -10,3 +10,8 @@ npm-debug.log
 build
 bin
 out
+
+# Front end local files
+project.config.js
+rules.md
+troubleshooting.md
