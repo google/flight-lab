@@ -19,8 +19,29 @@ main.pb-5
   img.logo(src="../assets/flightlablogo.png")
   h1.mt-0.display-3 Flight Lab
   p.title.my-3 A simulation & learning experience at Google
-  p.headline.my-4.warning--text Swipe badge to start!
-  v-dialog(v-model='showAuthorizedDialog', :persistent="true", max-width='400')
+  
+  template(v-if="hasBadgeReader")
+    p.headline.my-4.warning--text Swipe badge to start!
+    v-dialog(v-model='showAuthorizedDialog', :persistent="true", max-width='400')
+      v-card
+        v-card-text
+          p.title Flight Lab rules
+          rules.markdown
+          p.title.mt-4 Known issues
+          known-issues.ml-4
+        v-card-actions
+          v-spacer
+          v-btn(@click.native='showAuthorizedDialog = false') Cancel
+          v-btn(color="primary", to='/user') Agree
+    v-dialog(v-model='showUnauthorizedDialog', :persistent="true", max-width='400')
+      v-card
+        v-card-text
+          p Unauthorized. Please contact the team to get access.
+        v-card-actions
+          v-spacer
+          v-btn(@click.native='showUnauthorizedDialog = false') Close
+  v-dialog(v-else, v-model='showAuthorizedDialog', :persistent="true", max-width='400')
+    v-btn.my-3(large, slot='activator', color='primary') Let's fly!
     v-card
       v-card-text
         p.title Flight Lab rules
@@ -31,13 +52,6 @@ main.pb-5
         v-spacer
         v-btn(@click.native='showAuthorizedDialog = false') Cancel
         v-btn(color="primary", to='/user') Agree
-  v-dialog(v-model='showUnauthorizedDialog', :persistent="true", max-width='400')
-    v-card
-      v-card-text
-        p Unauthorized. Please contact the team to get access.
-      v-card-actions
-        v-spacer
-        v-btn(@click.native='showUnauthorizedDialog = false') Close
   p Powered by Google Flight Lab.
   bug-button
   .calendar-container
@@ -52,14 +66,16 @@ import BugButton from '../components/BugButton.vue'
 import Calendar from '../components/Calendar.vue'
 import KnownIssues from '../components/KnownIssues.vue'
 
-import {BACKEND_URL} from '../../project.config.js';
+import {BACKEND_URL, HAS_BADGE_READER} from '../../project.config.js';
 const axios = require("axios");
+
 export default {
   components: {Rules, BugButton, Calendar, KnownIssues},
   data(){
     return {
       showUnauthorizedDialog: false,
       showAuthorizedDialog: false,
+      hasBadgeReader: HAS_BADGE_READER,
     }
   },
   created() {
