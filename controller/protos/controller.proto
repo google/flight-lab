@@ -187,6 +187,7 @@ message System {
 }
 
 service ControlService {
+  rpc GetConfig(google.protobuf.Empty) returns (System);  
   // Updates status of components from client to server.
   rpc UpdateStatus(MachineStatus) returns (google.protobuf.Empty);
   // Listens to status of components from server.

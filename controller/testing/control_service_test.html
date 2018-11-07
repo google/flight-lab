@@ -7,6 +7,9 @@
 	<script>
 		var logElement = document.getElementById('Log');
 		var service = new proto.flightlab.ControlServiceClient('http://127.0.0.1:8000');
+		this.service.getConfig(new proto.google.protobuf.Empty(), {}, (err, response) => {
+			console.log(response);
+		});
 		var stream = this.service.watchStatus(new proto.google.protobuf.Empty(), {});
 		var statusUpdates = [];
 		stream.on('data', function(componentStatus) {

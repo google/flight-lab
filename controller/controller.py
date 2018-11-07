@@ -65,6 +65,18 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
     for event in self._command_changed_events:
       event.set()
 
+  def GetConfig(self, _, context):
+    """Handler for GetConfig gRPC call.
+
+    This handler returns the entire system configuration.
+
+    Args:
+      context: gRPC context.
+    Returns:
+      flightlab.System protobuf.
+    """
+    return self._system_config
+
   def UpdateStatus(self, machine_status, context):
     """Handler for UpdateStatus gRPC call.
 
