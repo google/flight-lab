@@ -86,8 +86,8 @@ class ControllerApp(pattern.Logger, appcommands.Cmd):
     """
     if not self._machine_config:
       ip = net.get_ip()
-      self._machine_config = next((x for x in self.system_config.machines
-                                   if x.ip == ip), None)
+      self._machine_config = next(
+          (x for x in self.system_config.machines if x.ip == ip), None)
       if not self._machine_config:
         raise Exception('No config found for this machine.')
     return self._machine_config
@@ -241,8 +241,8 @@ class ControllerClientApp(ControllerApp):
 
   def _initialize(self):
     super(ControllerClientApp, self)._initialize()
-    self._initialize_components()
     self._initialize_client()
+    self._initialize_components()
 
   def _initialize_components(self):
     for component_config in self.machine_config.components:
@@ -285,9 +285,7 @@ class ControllerClientApp(ControllerApp):
       pattern.run_as_thread(
           name='{0}.on_command({1})'.format(component.name, command),
           target=component.on_command,
-          kwargs={
-              'command': command
-          })
+          kwargs={'command': command})
 
   def _on_component_status_changed(self, component):
     self._control_client.update_status(component.proto)

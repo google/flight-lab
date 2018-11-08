@@ -18,94 +18,120 @@ limitations under the License.
 div
   p.error--text(v-if="isError"): b Unknown
   div(:class="{'-fade': isError}", v-if="isReady")
-    h3 SkyView
-    table
-      thead: tr
-        th
-        th Left
-        th Center
-        th Right
-      tbody
-        tr
-          td Projectors
-          td: status-text(:item="skyView.left.projector")
-          td: status-text(:item="skyView.center.projector")
-          td: status-text(:item="skyView.right.projector")
-        tr
-          td Simulators
-          td: status-text(:item="skyView.left.simulator")
-          td: status-text(:item="skyView.center.simulator")
-          td: status-text(:item="skyView.right.simulator")
-
-    h3 Machines
-    table: tbody
-      template(v-for="(components, title) in others")
-        tr(v-for="(component, index) in components")
-          td(v-if="index === 0", :rowspan="components.length") {{title}}
-          td {{component.displayName}}
-          td: status-text(:item="component")
+    template(v-for="(group, groupTitle) in machines")
+      h3 {{groupTitle}}
+      table: tbody
+        template(v-for="machine in group")
+          tr(v-for="(component, index) in machine.components")
+            td(v-if="index === 0", :rowspan="machine.components.length", :title="machine.description") {{machine.displayName}}
+            td(:title="component.description") {{component.displayName}}
+            td: status-text(:status="component.status")
 
 </template>
 
 <script>
-const axios = require("axios");
 const firebase = require("firebase");
 require("firebase/firestore");
 
-import {BACKEND_URL} from '../../project.config.js';
+import {STREAMING_URL} from '../../project.config.js';
 import StatusText from './StatusText.vue';
+const TIMEOUT_STATE = -1;
 const TIMEOUT = 60 * 1000; // 1m
+let STREAMING;
 
 export default {
   components: {StatusText},
   data() {
     return {
-      isReady: false,
+      isReady: true,
       isError: false,
       overallState: undefined,  // used to track change
-      skyView: {},  // format: {[direction]: {projector: {status, description}, simulator: {status, description}}
-      others: {},  // format: {[machine]:{displayName, status, description}}
-      progress: 0,
+      machines: {},  // [groupName]: {displayName, description, components: [{displayName, description, status}]}
+      countComponent: 0,
+      countActive: 0,
     }
   },
   created() {
-    this.getStatus();
-    this.interval = setInterval(() => {this.getStatus()}, 1000);
+    this.startStreaming();
   },
   beforeDestroy() {
-    clearInterval(this.interval);
+    STREAMING.cancel('data');
   },
   methods: {
-    getStatus(){
-      axios.get(BACKEND_URL + '/config').then((response) => {
-        this.isError = false;
-        const data = response.data;
-        this.progress = this.countProgress(data.machines);
-        this.updateOverallState(data.state, this.progress);
-        this.updateEachDevice(data.machines);
-        this.isReady = true;
-      })
-      .catch((err) => {
-        console.error(err);
-        this.isError = true;
+    startStreaming() {
+      console.info(proto);
+      const service = new proto.flightlab.ControlServiceClient(STREAMING_URL);
+      service.getConfig(new proto.google.protobuf.Empty(), {}, (err, response) => {
+        this.parseConfig(response);
+      });
+      STREAMING = service.watchConfig(new proto.google.protobuf.Empty(), {});
+      STREAMING.on('data', this.parseConfig);
+    },
+    parseConfig(config) {
+      const temp = {};
+      this.countComponent = 0;
+      this.countActive = 0;
+      config.getMachinesList().forEach((machine) => {
+        const groupName = machine.getGroupname();
+        temp[groupName] = temp[groupName] || [];
+        temp[groupName].push({
+          displayName: machine.getName(),
+          description: machine.getDescription(),
+          components: this.parseMachine(machine),
+        });
+      });
+      this.machines = temp;
+      // Parse system after machine, so that we have the counts for progress ready.
+      this.parseSystem(config.getState());
+    },
+    parseMachine(machine) {
+      return machine.getComponentsList()
+      .filter(component => component.getDisplayName())
+      .map(component => {
+        const displayName = component.getDisplayName();
+        const status = this.getStatus(component);
+        // Update count for progress
+        this.countComponent ++;
+        if (status === proto.flightlab.Component.Status.ON) this.countActive ++;
+        return {displayName, status};
       });
     },
-    updateOverallState(state, progress){
+    getStatus(component) {
+      const getName = (allStatus, status) => {
+        for (let name in allStatus) {
+          if (allStatus[name] === status) return name;
+        }
+        return null;
+      };
+      switch(component.getKindCase()) {
+        case proto.flightlab.Component.KindCase.APP:
+          return getName(proto.flightlab.App.Status, component.getApp().getStatus());
+        case proto.flightlab.Component.KindCase.BADGER:
+          return getName(proto.flightlab.Badger.Status, component.getBadger().getStatus());
+        case proto.flightlab.Component.KindCase.PROJECTOR:
+          return getName(proto.flightlab.Projector.Status, component.getProjector().getStatus());
+        case proto.flightlab.Component.KindCase.WINDOWS_APP:
+          return getName(proto.flightlab.WindowsApp.Status, component.getWindowsApp().getStatus());
+        default:
+          return null;
+      }
+    },
+    parseSystem(state){
       // If the overallState is undefined, then it's the first load
       if (!this.overallState) {
         this.overallState = state;
-        this.$emit('updateOverallState', {state, progress: this.progress, isInit: true});
+        this.$emit('updateOverallState', {state, progress: this.countActive / this.countComponent, isInit: true});
       }
 
       // When the state changed from non-X to X, we say the X action just
       // finished, and update the parent.
-      else if (this.overallState !== 'OFF' && state === 'OFF') {
+      else if (this.overallState !== proto.flightlab.System.State.OFF && state === proto.flightlab.System.State.OFF) {
         this.$emit('updateOverallState', {state});
         this.log('Turned off successfully');
         this.overallState = state;
         this.setTransientTimer(false);
       }
-      else if (this.overallState !== 'ON' && state === 'ON') {
+      else if (this.overallState !== proto.flightlab.System.State.ON && state === proto.flightlab.System.State.ON) {
         this.$emit('updateOverallState', {state});
         this.log('Turned on successfully');
         this.overallState = state;
@@ -113,31 +139,19 @@ export default {
       }
       // We keep send if the state is TRANSIENT, unless it's TIMEOUT
       // TIMEOUT is a state for frontend only, it's created in setTransientTimer
-      else if (this.overallState !== 'TIMEOUT' && state === 'TRANSIENT') {
-        this.$emit('updateOverallState', {state, progress});
+      else if (this.overallState !== TIMEOUT_STATE && state === proto.flightlab.System.State.TRANSIENT) {
+        this.$emit('updateOverallState', {state, progress: this.countActive / this.countComponent});
         this.overallState = state;
         this.setTransientTimer(true);
       }
       else if (this.overallState === state) {/* Do nothing */}
-      else if (this.overallState === 'TIMEOUT' && state === 'TRANSIENT') {/* Do nothing */}
+      else if (this.overallState === TIMEOUT_STATE && state === proto.flightlab.System.State.TRANSIENT) {/* Do nothing */}
       else {
         this.isError = true;
         this.$emit('updateOverallState', {state});
         this.log('Abnormal state' + state);
         this.overallState = state;
       }
-    },
-    countProgress(machines) {
-      let total = 0;
-      let finished = 0;
-      machines.forEach((machine) => {
-        if (!machine.components) return;
-        machine.components.forEach((component) => {
-          if (component.status) total ++;
-          if (component.status === 'ON') finished ++;
-        })
-      });
-      return Math.round(finished / total * 100) + '%';
     },
     setTransientTimer(isStarting) {
       // This is a function for controlling a timer, which tracks if the
@@ -152,36 +166,10 @@ export default {
       // then we start a timer.
       else if (!this.transientTimer) {
         this.transientTimer = setTimeout(() => {
-          this.overallState = 'TIMEOUT'
-          this.$emit('updateOverallState', {state: 'TIMEOUT', progress: this.progress});
+          this.overallState = TIMEOUT_STATE
+          this.$emit('updateOverallState', {state: TIMEOUT_STATE, progress: this.countActive / this.countComponent});
         }, TIMEOUT);
       }
-    },
-    updateEachDevice(machines) {
-      machines.forEach(machine => {
-        switch (machine.name) {
-          case 'SkyView - Left':
-          case 'SkyView - Center':
-          case 'SkyView - Right':
-            let direction;
-            if (machine.name.indexOf('Left') !== -1) direction = 'left';
-            if (machine.name.indexOf('Center') !== -1) direction = 'center';
-            if (machine.name.indexOf('Right') !== -1) direction = 'right';
-
-            const skyViewStatusOneDirection = {
-              projector: machine.components.filter(component => component.displayName === 'Projector')[0],
-              simulator: machine.components.filter(component => component.displayName === 'Simulator')[0],
-            };
-            this.$set(this.skyView, direction, skyViewStatusOneDirection);
-            break;
-          case 'Avionics Controller':
-          case 'Cockpit':
-          case 'Instructor Console':
-            // format: {displayName, status, description}
-            this.$set(this.others, machine.name, machine.components.filter(component => component.displayName));
-            break;
-        }
-      });
     },
     log(action, isError=false) {
       console.info(action);

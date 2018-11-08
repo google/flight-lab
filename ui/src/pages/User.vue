@@ -68,6 +68,7 @@ import BugButton from '../components/BugButton.vue'
 import Calendar from '../components/Calendar.vue'
 
 import {BACKEND_URL} from '../../project.config.js';
+const TIMEOUT_STATE = -1;
 
 export default {
   components: {Simulator, Troubleshooting, Status, BugButton, Calendar, KnownIssues, Preflight, Postflight},
@@ -166,19 +167,19 @@ export default {
     },
     updateOverallState(data){
       switch(data.state) {
-        case 'ON':
+        case  proto.flightlab.System.State.ON:
           this.currentState = 'on';
           this.msg = 'System on';
           break
-        case 'OFF':
+        case  proto.flightlab.System.State.OFF:
           this.currentState = 'off';
           this.msg = 'System off';
           break;
-        case 'TRANSIENT':
+        case  proto.flightlab.System.State.TRANSIENT:
           this.currentState = 'transient';
           this.msg = 'Progress: ' + data.progress;
           break;
-        case 'TIMEOUT':
+        case TIMEOUT_STATE:
           this.currentState = 'timeout';
           this.msg = 'Timeout. Progress: ' + data.progress;
           break;
