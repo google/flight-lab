@@ -169,6 +169,7 @@ message Machine {
   repeated Component components = 4;
   string chrome_executable_path = 5;
   float last_heartbeat_timstamp = 6;
+  string groupName = 7;
 }
 
 // Configuration for the entire system.
@@ -188,10 +189,12 @@ message System {
 
 service ControlService {
   rpc GetConfig(google.protobuf.Empty) returns (System);  
+  // Listens to any change of system configuration.
+  rpc WatchConfig(google.protobuf.Empty) returns (stream System);
   // Updates status of components from client to server.
   rpc UpdateStatus(MachineStatus) returns (google.protobuf.Empty);
   // Listens to status of components from server.
-  rpc WatchStatus(google.protobuf.Empty) returns (stream ComponentStatus);
+  rpc WatchStatus(google.protobuf.Empty) returns (stream MachineStatus);
   // Listens to command from server.
   rpc WatchCommand(MachineId) returns (stream SystemCommand);
 }

@@ -12,13 +12,15 @@
 		});
 		var stream = this.service.watchStatus(new proto.google.protobuf.Empty(), {});
 		var statusUpdates = [];
-		stream.on('data', function(componentStatus) {
-			statusUpdates.push(componentStatus);
-			console.log(componentStatus);
+		stream.on('data', function(machineStatus) {
+			statusUpdates.push(machineStatus);
+			console.log(machineStatus);
 
-			var div = document.createElement('div');
-			div.innerText = `${componentStatus.getName()}: ${componentStatus.getStatus()}`;
-			logElement.appendChild(div);
+			for (var componentStatus in machineStatus.componentStatus) {
+				var div = document.createElement('div');
+				div.innerText = `${componentStatus.getName()}: ${componentStatus.getStatus()}`;
+				logElement.appendChild(div);
+			}
 		});
 	</script>
 </body>

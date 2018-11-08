@@ -77,6 +77,21 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
     """
     return self._system_config
 
+  def WatchConfig(self, _, context):
+    self.logger.info('New client starts to watch config...')
+    queue = Queue.Queue(maxsize=100)
+    self._notification_queues.append(queue)
+    try:
+      while not self._stopped:
+        try:
+          queue.get(block=True, timeout=1)
+          self.logger.info('Notifying client config change...')
+          yield self._system_config
+        except Queue.Empty:
+          pass
+    finally:
+      self._notification_queues.remove(queue)
+
   def UpdateStatus(self, machine_status, context):
     """Handler for UpdateStatus gRPC call.
 
@@ -113,12 +128,12 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
       settings.status = status
       component.status = component_status.status
 
-      for queue in self._notification_queues:
-        self.logger.info('Notifying clients watching for status...')
-        try:
-          queue.put(component_status, block=False)
-        except Queue.Full:
-          pass
+    for queue in self._notification_queues:
+      self.logger.info('Notifying clients watching for status...')
+      try:
+        queue.put(machine_status, block=False)
+      except Queue.Full:
+        pass
 
     self.emit('status_changed')
 
@@ -132,7 +147,7 @@ class ControlService(controller_pb2_grpc.ControlServiceServicer,
     Args:
       context: gRPC context.
     Yields:
-      flightlab.ComponentStatus.
+      flightlab.MachineStatus.
     """
     self.logger.info('New client starts to watch status...')
     queue = Queue.Queue(maxsize=100)
