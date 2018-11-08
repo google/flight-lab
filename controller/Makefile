@@ -8,7 +8,7 @@
 ifeq ($(OS),Windows_NT)
 	RequirementsFile := requirements-windows.txt
 else
-	RequirementsFile := requirements.txt
+	RequirementsFile := requirements-linux.txt
 endif
 
 SRC_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))

@@ -1,22 +1,26 @@
 <html>
-<head>
-	<script src="../build/controller.js"></script>
-</head>
-<body>
-	<div id="Log"></div>
-	<script>
-		var logElement = document.getElementById('Log');
-		var service = new proto.flightlab.ControlServiceClient('http://127.0.0.1:8000');
-		var stream = this.service.watchStatus(new proto.google.protobuf.Empty(), {});
-		var statusUpdates = [];
-		stream.on('data', function(componentStatus) {
-			statusUpdates.push(componentStatus);
-			console.log(componentStatus);
-
-			var div = document.createElement('div');
-			div.innerText = `${componentStatus.getName()}: ${componentStatus.getStatus()}`;
-			logElement.appendChild(div);
-		});
-	</script>
-</body>
+	<head>
+		<script src="../build/controller.js"></script>
+	</head>
+	<body>
+		<div id="Log"></div>
+		<script>
+			var logElement = document.getElementById('Log');
+			var service = new proto.flightlab.ControlServiceClient('http://127.0.0.1:8000');
+			service.getConfig(new proto.google.protobuf.Empty(), {}, (err, response) => {
+				console.log(response);
+			});
+			var stream = service.watchStatus(new proto.google.protobuf.Empty(), {});
+			var statusUpdates = [];
+			stream.on('data', function(machineStatus) {
+				statusUpdates.push(machineStatus);
+				console.log(machineStatus);
+				for (var componentStatus in machineStatus.componentStatus) {
+					var div = document.createElement('div');
+					div.innerText = `${componentStatus.getName()}: ${componentStatus.getStatus()}`;
+					logElement.appendChild(div);
+				}
+			});
+		</script>
+	</body>
 </html>

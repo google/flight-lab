@@ -15,18 +15,21 @@ limitations under the License.
  -->
 
 <template lang="pug">
-span(:class="className", :title="item.description") {{item.status}}
+span(:class="className") {{status}}
 </template>
 
 <script>
 export default {
-  props: ['item'],
+  props: ['status'],
   computed: {
     className(){
-      if (this.item.status === 'ON') return 'primary--text';
-      else if (this.item.status === 'OFF') return 'grey--text';
+      if (this.status === 'ON' || this.status === 'RUNNING') return 'primary--text';
+      else if (this.status === 'OFF' || this.status === 'NOT_RUNNING') return 'grey--text';
       else return 'warning--text';
     },
+    text() {
+
+    }
   }
 };
 </script>

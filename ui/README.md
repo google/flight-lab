@@ -9,6 +9,20 @@ shows basic status information.
 - Vuetify: material design library for vue.js
 
 ## Project setup
+1. Create a `project.config.js` file under `/ui` with the content:
+
+```JaveScript
+// Required to run the app.
+export const BACKEND_URL = ;  // e.g. http://192.168.1.1:8080 or http://localhost:8000
+export const FIREBASE_CONFIG = ;  // The firebase config object. https://firebase.google.com/docs/web/setup
+export const HAS_BADGE_READER = ;  // A boolean value. If false, we show a button to start.
+
+// Optional - for the calendar feature.
+export const CLIENT_ID = ;  // Google Cloud OAuth client id
+export const API_KEY = ;  // Google Cloud project API key
+export const CALENDAR_ID = ;   // Calendar ID. (You can find it in Google Calendar settings.)
+
+```
 
 1. Update the `BACKEND_URL` in `project.config.js`.
 1. Set up Firebase project.
