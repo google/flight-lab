@@ -1,0 +1,41 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP 5x7Segment
+D 5 digit 7 segment display
+$ENDCMP
+#
+$CMP 5x7Segment_0.36
+D 5 digit 7 segment display
+$ENDCMP
+#
+$CMP AS5601
+D Magnetic Encoder AMS AS5601-ASOM
+$ENDCMP
+#
+$CMP ButtonNidecTR1
+D Nidec Copal TR1
+$ENDCMP
+#
+$CMP CY8C9520A-24PVXI
+D Cypress 20 port GPIO Expander
+K GPIO Expander I2C
+$ENDCMP
+#
+$CMP LM3671
+D Switching Regulator
+$ENDCMP
+#
+$CMP LedButtonNidecTR2
+D Nidec Copal TR2
+$ENDCMP
+#
+$CMP MAX7221
+D LED Display Driver
+$ENDCMP
+#
+$CMP MCP23S17
+D 16 pin GPIO
+K gpio
+$ENDCMP
+#
+#End Doc Library
