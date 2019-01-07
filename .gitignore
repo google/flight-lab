@@ -1,4 +1,3 @@
-.*
 *.pyc
 controller/config.protoascii
 *_pb2.py

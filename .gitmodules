@@ -1,6 +1,6 @@
 [submodule "third_party/grpc-web"]
-	path = third_party/grpc-web
-	url = https://github.com/grpc/grpc-web
+  path = third_party/grpc-web
+  url = https://github.com/grpc/grpc-web
 [submodule "third_party/gflags"]
-	path = third_party/gflags
-	url = https://github.com/gflags/gflags
+  path = third_party/gflags
+  url = https://github.com/gflags/gflags

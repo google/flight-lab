@@ -1,6 +1,5 @@
 cherrypy==10.2.1
 enum
-evdev
 flask
 flask-cors
 google-apputils
