@@ -21,6 +21,11 @@ from google.protobuf import empty_pb2
 from protos import client_pb2
 from protos import client_pb2_grpc
 
+try:
+  raw_input          # Python 2
+except NameError:
+  raw_input = input  # Python 3
+
 
 def test_image_display(argv):
   """Test image display on client machine.

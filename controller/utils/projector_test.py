@@ -19,6 +19,11 @@ import sys
 
 import projector
 
+try:
+  raw_input          # Python 2
+except NameError:
+  raw_input = input  # Python 3
+
 
 def test(argv):
   ip = argv[1]
