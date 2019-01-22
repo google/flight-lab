@@ -23,7 +23,7 @@ from common import pattern
 try:
   xrange          # Python 2
 except NameError:
-  xrange = range  # Python 3
+  xrange = range  # Python 3
 
 
 class Dmx(pattern.Closable, pattern.Logger):
