@@ -7,7 +7,7 @@ ExecStart={CMDLINE}
 WorkingDirectory={SRC_DIR}
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=controller-{TYPE}
+SyslogIdentifier={NAME}
 Restart=always
 User={USER}
 
