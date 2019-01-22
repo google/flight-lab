@@ -81,6 +81,7 @@ message App {
   string working_dir = 3;
   bool restart_on_crash = 4;
   Status status = 5;
+  map<string, string> env = 6;
 }
 
 // Configuration for GUI app.

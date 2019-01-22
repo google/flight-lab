@@ -40,6 +40,7 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
                arguments=[],
                working_dir=None,
                restart_on_crash=False,
+               env=None,
                *args,
                **kwargs):
     """Creates an Application instance.
@@ -50,6 +51,7 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
       arguments: list of arguments.
       restart_on_crash: if True, restarts the application if it exited
                         unexpectedly.
+      env: dictionary of environment variables.
     """
     super(Application, self).__init__(
         worker_name='Application ({0})'.format(name), *args, **kwargs)
@@ -58,6 +60,12 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
     self._arguments = arguments
     self._working_dir = working_dir or os.path.dirname(self._bin_path)
     self._restart_on_crash = restart_on_crash
+    if env:
+      self._env = os.environ.copy()
+      self._env.update(env)
+    else:
+      self._env = None
+
     self._app_proc = None
 
   @property
@@ -131,7 +139,7 @@ class Application(pattern.EventEmitter, pattern.Worker, pattern.Logger):
 
     proc = None
     try:
-      proc = subprocess.Popen(args, cwd=self._working_dir, close_fds=True)
+      proc = subprocess.Popen(args, cwd=self._working_dir, close_fds=True, env=self._env)
     except Exception as e:
       self.logger.debug('[App - {0}] Failed to launch. {1}'.format(
           self._name, e))
