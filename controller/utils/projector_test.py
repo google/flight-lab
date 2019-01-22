@@ -12,11 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Test-cases for utils.Projector."""
+from __future__ import print_function
 
 import logging
 import sys
 
 import projector
+
+try:
+  raw_input          # Python 2
+except NameError:
+  raw_input = input  # Python 3
 
 
 def test(argv):
@@ -30,19 +36,19 @@ def test(argv):
       try:
         p.power_on()
       except Exception as e:
-        print e
+        print(e)
     elif cmd == 'off':
       try:
         p.power_off()
       except Exception as e:
-        print e
+        print(e)
     elif cmd == 'exit':
       break
   p.stop()
 
 
 def on_state_changed(old_state, new_state):
-  print 'State changed: "{0}" => "{1}"'.format(old_state, new_state)
+  print('State changed: "{0}" => "{1}"'.format(old_state, new_state))
 
 
 if __name__ == '__main__':

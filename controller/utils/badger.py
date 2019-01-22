@@ -56,7 +56,7 @@ class BadgeValidator(pattern.EventEmitter):
       r = requests.get(url = self._url, params = {self._key_param: badge_id})
       return r.status_code >= 200 and r.status_code < 300
     except requests.ConnectionError:
-      return false
+      return False
 
 class BadgeReader(pattern.Worker, pattern.EventEmitter):
   """Worker that monitors the badge reader and emits the badge ID on success.

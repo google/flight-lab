@@ -20,6 +20,11 @@ import struct
 
 from common import pattern
 
+try:
+  xrange          # Python 2
+except NameError:
+  xrange = range  # Python 3
+
 
 class Dmx(pattern.Closable, pattern.Logger):
   """Class for controlling DMX lights.
