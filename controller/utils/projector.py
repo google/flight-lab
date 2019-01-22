@@ -164,7 +164,7 @@ class ProjectorController(object):
       if self._password is None:
         raise ProjectorException('Projector requires a password.')
 
-      pass_data = (salt + password).encode('utf-8')
+      pass_data = (salt + self._password).encode('utf-8')
       pass_data_md5 = hashlib.md5(pass_data).hexdigest()
 
       self._send_command(cmd='POWR', param='?', prefix=pass_data_md5)
