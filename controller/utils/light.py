@@ -21,9 +21,9 @@ import struct
 from common import pattern
 
 try:
-  xrange          # Python 2
+  xrange  # Python 2
 except NameError:
-  xrange = range  # Python 3
+  xrange = range  # Python 3
 
 
 class Dmx(pattern.Closable, pattern.Logger):
@@ -85,8 +85,8 @@ class Dmx(pattern.Closable, pattern.Logger):
       w: brightness (0-1.0)
     """
     r, g, b = colorsys.hsv_to_rgb(h % 1.0, s, v)
-    self.set_rgb(channel, int(255 * r), int(255 * g), int(255 * b),
-                 int(255 * w))
+    self.set_rgb(channel,
+                 int(255 * r), int(255 * g), int(255 * b), int(255 * w))
 
   def render(self):
     """Send DMX data string to the Enttec."""
