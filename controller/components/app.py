@@ -47,7 +47,8 @@ class AppComponent(base.Component):
                    if self.settings.arguments else []),
         working_dir=self.settings.working_dir,
         restart_on_crash=(self.settings.restart_on_crash
-                          if self.settings.restart_on_crash else False))
+                          if self.settings.restart_on_crash else False),
+        env=(self.settings.env if self.settings.env else None))
     self._app.on('started', self._on_app_started)
     self._app.on('stopped', self._on_app_stopped)
 

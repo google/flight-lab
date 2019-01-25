@@ -1,2 +1,2 @@
-if $programname == 'controller-{TYPE}' then /var/log/controller-{TYPE}.log
+if $programname == '{NAME}' then /var/log/{NAME}}.log
 & stop

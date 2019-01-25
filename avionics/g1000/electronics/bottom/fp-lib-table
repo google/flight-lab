@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name custom)(type KiCad)(uri /home/jrparker/g1000/pcb/left_side/custom.pretty)(options "")(descr ""))
+)
