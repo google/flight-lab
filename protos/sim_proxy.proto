@@ -1,0 +1,112 @@
+/*
+    Copyright 2018 Flight Lab authors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+       https://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/
+
+// Protobuf and gRPC service to communicate with SimProxy.
+
+syntax = "proto3";
+
+// Supported types of data to read from flight simulator.
+// To add more types:
+//   1. Find datum name and unit from [Simulation Variables](http://www.prepar3d.com/SDKv4/LearningCenter.php).
+//   2. Add enum for the new type here.
+//   3. Add mapping between the enum and datum name/unit in SimData::SimData() in SimData.cpp.
+enum DataType {
+	AIRSPEED_INDICATOR_INDICATION = 0;		// in knots
+	ATTITUDE_INDICATOR_BANK_ANGLE = 1;		// in degree (-180 ~ +180)
+	ATTITUDE_INDICATOR_PITCH_ANGLE = 2;		// in degree (-90 ~ +90)
+	HEADING_INDICATOR_INDICATION = 3;		// in degree (0 ~ 360)
+	ALTIMETER_INDICATION = 4;				// in feet
+	ALTIMETER_KOHLSMAN_SETTING = 5;			// inHg
+	MAGNETIC_COMPASS_INDICATION = 6;		// in degree (0 ~ 360)
+	FLAPS_POSITION = 7;						// in index (0, 1, 2, ...)
+	AIRCRAFT_LATITUDE = 8;					// in degree
+	AIRCRAFT_LONGITUDE = 9;					// in degree
+	AIRCRAFT_ALTITUDE = 10;					// in feet
+	AIRCRAFT_PITCH = 11;					// in degree
+	AIRCRAFT_BANK = 12;						// in degree
+	AIRCRAFT_HEADING_TRUE = 13;				// in degree
+	ELEVATOR_TRIM_POSITION = 14;            // in degree (-19.50 ~ +19.50)
+	ELEVATOR_TRIM_INDICATOR = 15;           // (-1.0 ~ 1.0)
+	TIME = 16;								// UTC time in seconds from 12:00 AM January 1, 0000
+	TIME_OF_DAY = 17;                       // 1=Day, 2=Dusk/Dawn, 3=Night
+	MAGNETIC_VARIATION = 18;				// in degree
+	MASTER_BATTERY_SWITCH = 19;				// bool
+	MASTER_ALTERNATOR_SWITCH = 20;			// bool
+	AVIONICS_MASTER_SWITCH = 21;			// bool
+	TAXI_LIGHT = 22;						// bool
+	LANDING_LIGHT = 23;						// bool
+	BEACON_LIGHT = 24;						// bool
+	NAVIGATION_LIGHT = 25;					// bool
+	STROBE_LIGHT = 26;						// bool
+	FUEL_PUMP_SWITCH = 27;					// bool
+	PITOT_HEAT = 28;						// bool
+	LEFT_MAGNETO = 29;						// bool
+	RIGHT_MAGNETO = 30;						// bool
+	ENGINE_STARTER = 31;					// bool
+}
+
+enum EventType {
+	EVENT_BEGIN = 0;
+	EVENT_TOGGLE_MASTER_BATTERY = 1000;
+	EVENT_TOGGLE_MASTER_ALTERNATOR = 1001;
+	EVENT_TOGGLE_AVIONICS_MASTER = 1002;
+	EVENT_TOGGLE_TAXI_LIGHT = 1003;
+	EVENT_TOGGLE_LANDING_LIGHT = 1004;
+	EVENT_TOGGLE_BEACON_LIGHT = 1005;
+	EVENT_TOGGLE_NAVIGATION_LIGHT = 1006;
+	EVENT_TOGGLE_STROBE_LIGHT = 1007;
+	EVENT_TOGGLE_FUEL_PUMP_SWITCH = 1008;
+	EVENT_TOGGLE_PITOT_HEAT_SWITCH = 1009;
+	EVENT_MAGNETO_OFF = 1010;
+	EVENT_MAGNETO_LEFT = 1011;
+	EVENT_MAGNETO_RIGHT = 1012;
+	EVENT_MAGNETO_BOTH = 1013;
+	EVENT_MAGNETO_START = 1014;
+}
+
+// A single data from flight simulator.
+message Data {
+	DataType type = 1;
+	double value = 2;
+}
+
+message Event {
+	EventType type = 1;
+}
+
+service SimProxy {
+	// Monitors a set of data types and receives value updates in streaming.
+	rpc Watch(WatchRequest) returns (stream WatchResponse) {}
+
+	// Sets value for specified simulator data.
+	rpc Set (Data) returns (EmptyResponse) {}
+
+	// Trigger a specified event, such as press of a G1000 button.
+	rpc Trigger (Event) returns (EmptyResponse) {}
+}
+
+// Request to monitor a set of data types.
+message WatchRequest {
+	repeated DataType types = 1;
+}
+
+// Values of the set of data types to monitor.
+message WatchResponse {
+	repeated Data data = 1;
+}
+
+message EmptyResponse {
+}
