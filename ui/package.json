@@ -34,7 +34,7 @@
     "postcss-reporter": "^3.0.0",
     "postcss-url": "^5.1.2",
     "pug": "^2.0.0-beta6",
-    "showdown": "^1.8.6",
+    "showdown": "^1.9.1",
     "style-loader": "^0.13.1",
     "svg-inline-loader": "^0.8.0",
     "url-loader": "^0.5.7",
