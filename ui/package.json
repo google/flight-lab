@@ -33,7 +33,7 @@
     "postcss-loader": "^1.2.2",
     "postcss-reporter": "^3.0.0",
     "postcss-url": "^5.1.2",
-    "pug": "^2.0.0-beta6",
+    "pug": "^3.0.1",
     "showdown": "^1.8.6",
     "style-loader": "^0.13.1",
     "svg-inline-loader": "^0.8.0",
