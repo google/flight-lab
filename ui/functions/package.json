@@ -10,10 +10,10 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
-    "axios": "^0.18.0",
-    "firebase-admin": "^5.10.0",
+    "axios": "^0.28.0",
+    "firebase-admin": "^12.1.1",
     "firebase-functions": "^2.0.5",
-    "nodemailer": "^4.6.7"
+    "nodemailer": "^6.9.9"
   },
   "devDependencies": {
     "eslint": "^4.12.0",
