@@ -13,7 +13,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "firebase": "^4.9.0",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "vue": "^2.1.0",
     "vue-markdown-loader": "^2.4.1",
     "vuetify": "^1.0.18"
