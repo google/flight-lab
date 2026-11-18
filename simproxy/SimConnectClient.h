@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <atomic>
+#include <functional>
 #include <map>
 #include <mutex>
 #include <vector>
@@ -39,7 +41,7 @@ public:
 	SimConnectClient();
 
 	bool IsRunning() {
-		return hSimConnect_ != NULL;
+		return hSimConnect_.load() != NULL;
 	}
 
 	/// Sets value for specified simulator data.
@@ -64,7 +66,6 @@ public:
 
 private:
 	int ReserveId();
-	void ReleaseId(int id);
 	void ResetAllIds();
 
 	void CancelAllDataRequests();
@@ -75,11 +76,11 @@ private:
 	void OnOpen(SIMCONNECT_RECV* pData, DWORD cbData);
 	void OnSystemState(SIMCONNECT_RECV_SYSTEM_STATE* pObjData);
 
-	HANDLE hSimConnect_ = NULL;
+	std::atomic<HANDLE> hSimConnect_{NULL};
 
 	std::mutex id_lock_;
-	std::vector<int> available_ids_ = std::vector<int>();
 	int next_id_;
 
+	std::mutex requests_lock_;
 	std::map<int, DataRequest> data_requests_;
 };
