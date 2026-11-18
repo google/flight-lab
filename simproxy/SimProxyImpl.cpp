@@ -49,6 +49,9 @@ grpc::Status SimProxyImpl::Watch(grpc::ServerContext* context,
 		id = client_.StartDataRequest(definitions, [&ready, &mtx, &response](double* values, int length) {
 			// Values are changed. Save them and notify streaming thread.
 			std::unique_lock<std::mutex> lock(mtx);
+			if (length != response.data_size()) {
+				return;
+			}
 			for (int i = 0; i < length; ++i) {
 				response.mutable_data(i)->set_value(values[i]);
 			}

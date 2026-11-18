@@ -15,6 +15,10 @@
 
 #include "SimConnectClient.h"
 
+#include <cstdio>
+#include <limits>
+#include <stdexcept>
+
 
 enum CLIENT_REQUEST_ID {
 	CRID_REQUEST_SYSTEM_STATE = 1,
@@ -48,12 +52,10 @@ void SimConnectClient::SetData(DataDefinition definition, double value) {
 	}
 	catch (...) {
 		SimConnect_ClearDataDefinition(hSimConnect_, id);
-		ReleaseId(id);
 		throw;
 	}
 
 	SimConnect_ClearDataDefinition(hSimConnect_, id);
-	ReleaseId(id);
 }
 
 int SimConnectClient::StartDataRequest(std::vector<DataDefinition> definitions, DataCallback data_callback, CancellationCallback cancel_callback) {
@@ -67,15 +69,18 @@ int SimConnectClient::StartDataRequest(std::vector<DataDefinition> definitions, 
 		for (auto &definition : definitions) {
 			HRESULT hr = SimConnect_AddToDataDefinition(hSimConnect_, id, definition.Name, definition.Unit);
 			if (FAILED(hr)) {
-				throw "Failed to add variable to watch.";
+				throw std::runtime_error("Failed to add variable to watch.");
 			}
 		}
 
-		data_requests_[id] = DataRequest{ definitions, data_callback, cancel_callback };
+		{
+			std::lock_guard<std::mutex> lock(requests_lock_);
+			data_requests_[id] = DataRequest{ definitions, data_callback, cancel_callback };
+		}
 
 		HRESULT hr = SimConnect_RequestDataOnSimObject(hSimConnect_, id, id, SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_PERIOD_SECOND, SIMCONNECT_DATA_REQUEST_FLAG_CHANGED);
 		if (FAILED(hr)) {
-			throw "Failed to request data.";
+			throw std::runtime_error("Failed to request data.");
 		}
 	}
 	catch (...) {
@@ -88,34 +93,42 @@ int SimConnectClient::StartDataRequest(std::vector<DataDefinition> definitions, 
 
 void SimConnectClient::StopDataRequest(int dataDefId) {
 	printf("[SimConnectClient] Stopping data request (id=%d)...\n", dataDefId);
-	data_requests_.erase(dataDefId);
+	{
+		std::lock_guard<std::mutex> lock(requests_lock_);
+		data_requests_.erase(dataDefId);
+	}
 	if (hSimConnect_) {
 		SimConnect_ClearDataDefinition(hSimConnect_, dataDefId);
 	}
-	ReleaseId(dataDefId);
 }
 
 void SimConnectClient::CancelAllDataRequests() {
-	for (const auto& entry : data_requests_) {
+	std::map<int, DataRequest> requests_to_cancel;
+	{
+		std::lock_guard<std::mutex> lock(requests_lock_);
+		requests_to_cancel.swap(data_requests_);
+	}
+	for (const auto& entry : requests_to_cancel) {
 		entry.second.cancel_callback();
 	}
-	data_requests_.clear();
 }
 
 
 void SimConnectClient::Run() {
 	printf("[SimConnectClient] Connecting to simulator...\n");
-	if (!SUCCEEDED(SimConnect_Open(&hSimConnect_, "SimProxy", NULL, 0, 0, 0))) {
+	HANDLE hSimConnect = NULL;
+	if (!SUCCEEDED(SimConnect_Open(&hSimConnect, "SimProxy", NULL, 0, 0, 0))) {
 		return;
 	}
+	hSimConnect_.store(hSimConnect);
 	printf("[SimConnectClient] Connected to simulator.\n");
 
-	SimConnect_SubscribeToSystemEvent(hSimConnect_, EVENT_SIM_START, "SimStart");
+	SimConnect_SubscribeToSystemEvent(hSimConnect, EVENT_SIM_START, "SimStart");
 
 	while (true) {
 		SIMCONNECT_RECV* pData = NULL;
 		DWORD cbData = 0;
-		HRESULT hr = SimConnect_GetNextDispatch(hSimConnect_, &pData, &cbData);
+		HRESULT hr = SimConnect_GetNextDispatch(hSimConnect, &pData, &cbData);
 		if (SUCCEEDED(hr)) {
 			if (!OnDispatch(pData, cbData)) {
 				break;
@@ -123,8 +136,8 @@ void SimConnectClient::Run() {
 		}
 	}
 
-	SimConnect_Close(hSimConnect_);
-	hSimConnect_ = NULL;
+	hSimConnect_.store(NULL);
+	SimConnect_Close(hSimConnect);
 	CancelAllDataRequests();
 	ResetAllIds();
 }
@@ -162,19 +175,32 @@ void SimConnectClient::OnEvent(SIMCONNECT_RECV_EVENT* pEvent) {
 }
 
 void SimConnectClient::OnSimObjectData(SIMCONNECT_RECV_SIMOBJECT_DATA* pData) {
-	try {
-		auto &request = data_requests_.at(pData->dwDefineID);
-		double* values = (double*)&pData->dwData;
-		for (DWORD i = 0; i < pData->dwDefineCount; ++i) {
-			if (request.data_definitions[i].FromSimValue) {
-				values[i] = request.data_definitions[i].FromSimValue(values[i]);
-			}
+	DataRequest request;
+	{
+		std::lock_guard<std::mutex> lock(requests_lock_);
+		auto it = data_requests_.find(pData->dwDefineID);
+		if (it == data_requests_.end()) {
+			// Stale message for a stopped or unknown request; ignore it.
+			return;
 		}
-		request.data_callback(values, pData->dwDefineCount);
+		request = it->second;
 	}
-	catch (std::out_of_range) {
-		StopDataRequest(pData->dwDefineID);
+
+	if (pData->dwDefineCount != request.data_definitions.size()) {
+		printf("[SimConnectClient] Ignoring data message with mismatched definition count (id=%lu, got=%lu, expected=%zu).\n",
+			static_cast<unsigned long>(pData->dwDefineID),
+			static_cast<unsigned long>(pData->dwDefineCount),
+			request.data_definitions.size());
+		return;
 	}
+
+	double* values = (double*)&pData->dwData;
+	for (DWORD i = 0; i < pData->dwDefineCount; ++i) {
+		if (request.data_definitions[i].FromSimValue) {
+			values[i] = request.data_definitions[i].FromSimValue(values[i]);
+		}
+	}
+	request.data_callback(values, pData->dwDefineCount);
 }
 
 void SimConnectClient::OnOpen(SIMCONNECT_RECV* pData, DWORD cbData) {
@@ -197,24 +223,24 @@ void SimConnectClient::OnSystemState(SIMCONNECT_RECV_SYSTEM_STATE* pObjData) {
 }
 
 int SimConnectClient::ReserveId() {
-	std::lock_guard<std::mutex> lock(id_lock_);
-	if (available_ids_.size() > 0) {
-		int id = available_ids_.back();
-		available_ids_.pop_back();
-		return id;
+	std::lock_guard<std::mutex> req_lock(requests_lock_);
+	std::lock_guard<std::mutex> id_lock(id_lock_);
+	// Allocate IDs monotonically so cancelled request IDs are not immediately reused.
+	// On wrap-around, skip any IDs still active in data_requests_.
+	const int range = std::numeric_limits<int>::max() - CRID_RESERVATION_START;
+	for (int attempts = 0; attempts < range; ++attempts) {
+		if (next_id_ < CRID_RESERVATION_START || next_id_ == std::numeric_limits<int>::max()) {
+			next_id_ = CRID_RESERVATION_START;
+		}
+		int id = next_id_++;
+		if (data_requests_.find(id) == data_requests_.end()) {
+			return id;
+		}
 	}
-	else {
-		return next_id_++;
-	}
-}
-
-void SimConnectClient::ReleaseId(int id) {
-	std::lock_guard<std::mutex> lock(id_lock_);
-	available_ids_.push_back(id);
+	throw std::runtime_error("No available SimConnect request IDs.");
 }
 
 void SimConnectClient::ResetAllIds() {
 	std::lock_guard<std::mutex> lock(id_lock_);
-	available_ids_.clear();
 	next_id_ = CRID_RESERVATION_START;
 }
